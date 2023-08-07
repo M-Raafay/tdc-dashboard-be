@@ -5,7 +5,6 @@ export class CreateMemberDto {
     @IsNotEmpty()
     member_id :string
 
-
     @IsString()
     @MinLength(3)
     @IsNotEmpty()
