@@ -13,7 +13,6 @@ import { ProjectsModule } from './projects/projects.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
         const mongoUri = configService.get<string>('DATABASE_URL');
-//        console.log("url", configService.get<string>('DATABASE_URL'))
         return {
           uri: mongoUri,
         };
