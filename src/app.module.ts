@@ -5,6 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MembersModule } from './members/members.module';
 import { ProjectsModule } from './projects/projects.module';
+import { AdminModule } from './admin/admin.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -13,14 +15,16 @@ import { ProjectsModule } from './projects/projects.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
         const mongoUri = configService.get<string>('DATABASE_URL');
-        return {
+       return {
           uri: mongoUri,
         };
       },
       inject: [ConfigService],
     }),
     MembersModule,
-    ProjectsModule
+    ProjectsModule,
+    AdminModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService],

@@ -14,6 +14,6 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({whitelist:true}),
   );
-  await app.listen(Number(configService.get('PORT')) || 3001);  
+  await app.listen(Number(configService.get('PORT')) || 3001);    
 }
 bootstrap();

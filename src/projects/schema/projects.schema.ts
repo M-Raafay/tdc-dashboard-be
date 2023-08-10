@@ -1,29 +1,45 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 import { Details, DetailsSchema } from './details.schema';
 
 export type ProjectDocument = HydratedDocument<Project>;
 
 @Schema()
 export class Project {
+  _id: mongoose.Schema.Types.ObjectId
+
   @Prop()
   name: string;
 
   @Prop()
-  cordinator: string;
+  stack: string;
 
-  @Prop({type: [DetailsSchema] , default : []})
-  FE : Details[]
+  @Prop()
+  team_lead: string;
 
-  @Prop({type: [DetailsSchema] , default : []})
-  BE : string[]
+  @Prop()
+  duration: string;
 
-  @Prop({type: [DetailsSchema] , default : []})
-  UI : string[]
+  @Prop()
+  coordinator: string;
 
-  @Prop({type: [DetailsSchema] , default : []})
-  DEPLOYMENT:string[]
+  @Prop()
+  platform: string;
 
+  @Prop()
+  client: string;
+
+  @Prop()
+  consultant: string;
+
+  @Prop()
+  start_date: Date;
+
+  @Prop()
+  end_date: Date;
+
+  @Prop()
+  cost: string;
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

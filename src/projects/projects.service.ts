@@ -24,7 +24,7 @@ export class ProjectsService {
     if(!data){
       throw new HttpException('not found' , 404)
     }
-    return data;
+    return [data];
   }
 
   async update(id: string, updateProjectDto: UpdateProjectDto) {

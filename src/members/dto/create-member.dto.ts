@@ -1,6 +1,10 @@
 import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
+import { CreateProjectDto } from "src/projects/dto/create-project.dto";
+import { Project } from "src/projects/schema/projects.schema";
 
 export class CreateMemberDto {
+    _id: string
+
     @IsString()
     @IsNotEmpty()
     member_id :string
@@ -11,6 +15,7 @@ export class CreateMemberDto {
     username :string
 
     @IsString()
+    @IsNotEmpty()
     first_name: string;
     
     @IsString()
@@ -20,10 +25,11 @@ export class CreateMemberDto {
     email: string;
 
     @IsString()
-    TS: string;
+    tech_stack: string;
 
     @IsString()
-    TL: string;
+    team_lead: string;
 
-    Projects : string[]
+    @IsString()
+    projects : string[]
 }

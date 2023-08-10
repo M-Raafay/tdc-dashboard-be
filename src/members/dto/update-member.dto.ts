@@ -1,24 +1,22 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateMemberDto } from './create-member.dto';
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { CreateProjectDto } from 'src/projects/dto/create-project.dto';
+import { Project } from 'src/projects/schema/projects.schema';
 
 export class UpdateMemberDto extends PartialType(CreateMemberDto) {
-    _id : string
-    
+    _id: string
+
     @IsString()
-    @IsNotEmpty()
     member_id :string
 
     @IsString()
     @MinLength(3)
-    @IsNotEmpty()
     username :string
 
     @IsString()
-    @MinLength(3)
-    @IsNotEmpty()
     first_name: string;
-
+    
     @IsString()
     last_name: string;
 
@@ -26,8 +24,11 @@ export class UpdateMemberDto extends PartialType(CreateMemberDto) {
     email: string;
 
     @IsString()
-    TS: string;
+    tech_stack: string;
 
     @IsString()
-    TL: string;
+    team_lead: string;
+
+    @IsNotEmpty()
+    projects : string[]
 }

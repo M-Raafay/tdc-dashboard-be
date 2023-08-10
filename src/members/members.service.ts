@@ -5,33 +5,32 @@ import { Member } from './schema/members.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { response } from 'express';
+import { ProjectsService } from 'src/projects/projects.service';
+import { Project } from 'src/projects/schema/projects.schema';
 
 @Injectable()
 export class MembersService {
 
-  constructor(@InjectModel('Member') private memberModel: Model<Member>) {}
+  constructor(@InjectModel('Member') private memberModel: Model<Member>, 
+   private readonly projectService: ProjectsService) {};
   
-  async create(createMemberDto: CreateMemberDto) {
-    
+  async create(createMemberDto: CreateMemberDto) { 
     const userData = await this.memberModel.create(createMemberDto);
     return userData;
   }
 
-  findAll() {
-    return this.memberModel.find();
+  async findAll() {
+    return await this.memberModel.find().populate('projects');
   }
 
   async findOne(id: string) {
-    const data = await this.memberModel.findById({_id : id});
-   //  const data = await this.memberModel.findOne({member_id : id})
-    if(!data){
-      throw new HttpException('not found' , 404)
-    }
-    return data;
+   const data = await this.memberModel.findById({_id : id}).populate('projects');
+    return [data];
   }
 
   async update(id: string, updateMemberDto: UpdateMemberDto):Promise<Member> { 
-    const data =await this.memberModel.findByIdAndUpdate(id, {...updateMemberDto} ,{new:true})
+   let {projects , ...updateData} = updateMemberDto
+    const data =await this.memberModel.findByIdAndUpdate(id, {$set : updateData,$push : {projects}} ,{new:true})
     return data;
   }
 
