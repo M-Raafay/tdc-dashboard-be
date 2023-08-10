@@ -14,6 +14,7 @@ export class MembersService {
   constructor(@InjectModel('Member') private memberModel: Model<Member>, 
    private readonly projectService: ProjectsService) {};
   
+   //this is for creating member
   async create(createMemberDto: CreateMemberDto) { 
     const userData = await this.memberModel.create(createMemberDto);
     return userData;
