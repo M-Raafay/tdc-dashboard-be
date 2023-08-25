@@ -7,6 +7,12 @@ import { MembersModule } from './members/members.module';
 import { ProjectsModule } from './projects/projects.module';
 import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './roles/roles.guard';
+import { AuthGuard } from './auth/authenticated.guard';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { ResetPasswordModule } from './reset-password/reset-password.module';
 
 @Module({
   imports: [
@@ -21,12 +27,31 @@ import { AuthModule } from './auth/auth.module';
       },
       inject: [ConfigService],
     }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('SECRET'),
+        signOptions: { expiresIn: '1h' },
+      }),
+      inject: [ConfigService],
+    }),
     MembersModule,
     ProjectsModule,
     AdminModule,
-    AuthModule
+    AuthModule,
+    ResetPasswordModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ConfigService],
+  providers: [AppService, ConfigService,
+    // when jwt expires it wont allow requests?
+    // {
+    //   provide : APP_GUARD,
+    //   useClass:   JwtAuthGuard
+    // },
+  {
+    provide : APP_GUARD,
+    useClass:   RolesGuard
+  }
+],
 })
 export class AppModule {}

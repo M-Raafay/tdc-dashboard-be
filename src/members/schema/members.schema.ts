@@ -9,7 +9,7 @@ export class Member {
 
   _id: mongoose.Schema.Types.ObjectId
 
-  @Prop()
+  @Prop({unique:true})
   member_id: string;
 
   @Prop()
@@ -21,8 +21,11 @@ export class Member {
   @Prop()
   last_name: string;
 
-  @Prop()
+  @Prop({unique:true})
   email: string;
+
+  @Prop()
+  password:string
 
   @Prop()
   tech_stack: string;
@@ -30,12 +33,15 @@ export class Member {
   @Prop()
   team_lead: string;
 
-  // @Prop({type: mongoose.Schema.Types.ObjectId , ref : Project})
-  // projects : mongoose.Schema.Types.ObjectId
+  @Prop()
+  expense: number;
+
+  @Prop({default: 'user'})
+  role:string
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Project' }] })
   projects: Array<Project>;
- //projects: string[];
+
 }
 
 export const MemberSchema = SchemaFactory.createForClass(Member);

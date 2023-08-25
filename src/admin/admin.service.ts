@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -8,59 +8,110 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AdminService {
-  constructor(
-  @InjectModel('Admin') private adminModel : Model<Admin>){}
+  constructor(@InjectModel('Admin') private adminModel : Model<Admin>){}
 
   async createAdmin(createAdminDto: CreateAdminDto) {
-    const {admin_name , password} = (createAdminDto)
-    const name= admin_name.toLowerCase()    
+    const {password ,email, ...restData} = (createAdminDto)
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    await this.adminModel.create({name: name, password:hashedPassword})
-    
-    return `User ${name} added`;
+    if(!hashedPassword){
+      throw new NotAcceptableException('error in hashing password')
+    }
+    const emailAdmin= email.toLowerCase() 
+    try{
+      const data=  await this.adminModel.create({email: emailAdmin, password:hashedPassword, ...restData})
+      const receivedData = data.toObject();
+      
+      const {password ,...adminData} = receivedData
+      return adminData
+
+    }catch(error) {
+      if (error.code === 11000 || error.code === 11001) {
+        throw new ConflictException('Duplicate key error: The resource already exists.', error.message);
+      }
+      throw new NotAcceptableException(`error occurred.  ${error.message}`);
+    }    
   }
 
   async findAll() {
-    const admin =  await this.adminModel.find({},'-password')
-    return admin;
+    try{
+      const adminData =  await this.adminModel.find({},'-password')
+      return adminData;
+
+    }catch(error){
+      throw new Error(`error occurred while interacting with the database. ${error}`);
+    }
   }
 
   async findOneById(id: string) {
-    const admin =  await this.adminModel.findById(id)
-    return admin;
-  }
-
-  async findAdmin(userName : string){
-    const adminName = userName.toLowerCase();
-    const admin = await this.adminModel.findOne({name:adminName})
+    try{
+    const admin =  await this.adminModel.findById(id, '-password')
     if(!admin){
-      throw new NotFoundException('Admin not found : Wrong Name');
+      throw new NotFoundException('Admin not found OR doesnot exists : Wrong ID');
     }
     return admin;
+  }catch(error){
+      throw new Error(`error occurred while interacting with the database. ${error}`);
+    }
   }
 
-  async updateAdminName(id: string, updateAdminDto: UpdateAdminDto) {
+  // used in auth
+  async findAdmin(userName : string){
+    const adminName = userName.toLowerCase();    
+    const admin = await this.adminModel.findOne({username:adminName})
+    // if(!admin){
+    //   console.log('s');
+      
+    //   throw new NotFoundException('Admin not found : Wrong Name');
+    // }
+    return admin;
+  }
 
-    const password = updateAdminDto.password;
+  // used in auth. should be done by id
+  async findAdminByMail(mail : string){
+    const adminMail = mail.toLowerCase();    
+    const admin = await this.adminModel.findOne({email:adminMail})
+    // if(!admin){
+    //   console.log('s');
+      
+    //   throw new NotFoundException('Admin not found : Wrong Name');
+    // }
+    return admin;
+  }
+
+  async updateAdmin(id: string, updateAdminDto: UpdateAdminDto) {
+
+    const {password, email, ...restData} = updateAdminDto;
     //    const savedPassword = await this.adminModel.findById(id,'-_id -name -__v')
+    const adminMail= email.toLowerCase() // see if my usecase changes
     const data = await this.adminModel.findById(id)
     const savedPassword = data.password
 
     const isMatch = await bcrypt.compare(password, savedPassword);
     if(isMatch){
-      const updateName = this.adminModel.updateOne({_id : id}, {name : updateAdminDto.admin_name.toLowerCase()})
-      return updateName;// edit this acknowledgement
+        const updatedRecord = this.adminModel.findByIdAndUpdate({_id : id}, {email :adminMail, ...restData},{new:true})
+        //const {password, ...adminData} = updatedRecord 
+        return updatedRecord
     }else{
-      throw new Error('wrong password')
+      throw new NotAcceptableException('wrong password')
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} admin`;
+  async remove(id: string) {
+    try{
+      const admin =  await this.adminModel.findByIdAndDelete(id)
+      if(!admin){
+        throw new NotFoundException('Admin not found OR doesnot exists : Wrong ID');
+      }
+      return `Admin ${admin.admin_name} deleted`;
+    }catch(error){
+      throw new Error(`error occurred while interacting with the database. ${error}`);
+    }
   }
 
 
+  // const result =  await this.adminModel.findByIdAndDelete(id)
+  // return `Admin ${result.username} deleted`;
 
   
 }

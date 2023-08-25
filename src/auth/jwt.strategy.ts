@@ -16,10 +16,13 @@ export class JwtStrategy extends PassportStrategy(Strategy){
       async validate(payload :any){
         // this only returns data,,,actual validation is done by Super method in constructor
 
+        console.log(payload);
+        
         // use service to get actual data of admin
         return {
             _id : payload.sub,
-            name : payload.name
+            username : payload.username,
+            role : payload.role
         }
 
       }

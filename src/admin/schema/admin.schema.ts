@@ -7,13 +7,16 @@ export type AdminDocument = HydratedDocument<Admin>;
 export class Admin {
 
   @Prop()
-  name: string;
+  admin_name: string;
+
+  @Prop({unique:true})
+  email: string;
 
   @Prop()
   password: string;
-
-//   @Prop({enum : ['superadmin', 'admin']})
-//   role : string
+  
+  @Prop({default: 'admin'})
+  role: string;
   
 }
 
