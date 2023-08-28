@@ -18,7 +18,7 @@ import { MembersModule } from 'src/members/members.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('SECRET'),
-        signOptions: { expiresIn: '1h' },
+        signOptions: { expiresIn: '10h' },
       }),
       inject: [ConfigService],
     }),

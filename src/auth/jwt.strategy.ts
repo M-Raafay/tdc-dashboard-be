@@ -20,8 +20,8 @@ export class JwtStrategy extends PassportStrategy(Strategy){
         
         // use service to get actual data of admin
         return {
-            _id : payload.sub,
-            username : payload.username,
+            _id : payload.id,
+            username : payload.name,
             role : payload.role
         }
 

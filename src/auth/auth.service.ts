@@ -53,12 +53,12 @@ export class AuthService {
 
     // Access the secret key from the configuration
     const secret = this.configService.get('SECRET');
-    console.log(secret);
-    console.log(user);
+    // console.log(secret);
+    // console.log('edewfew',user);
     
-    const payload = {username : user.username , sub : user._id, role : user.role}
+    const payload = {name : user.username||user.admin_name , id : user._id, role : user.role}
     const token =  this.jwtService.sign(payload)
-    return {access_token : token};
+    return {access_token : token, ...payload};
   }
 
 }
