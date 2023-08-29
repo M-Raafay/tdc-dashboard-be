@@ -5,9 +5,9 @@ import { Project } from "src/projects/schema/projects.schema";
 export class CreateMemberDto {
     _id: string
 
-    @IsString()
-    @IsNotEmpty()
-    member_id :string
+    // @IsString()
+    // @IsNotEmpty()
+    // member_id :string
 
     @IsString()
     @MinLength(3)
@@ -35,9 +35,9 @@ export class CreateMemberDto {
     @IsString()
     team_lead: string;
 
-    @IsNumber()
-    expense : number;
+    // @IsNumber()
+    // expense : number;
 
-    @IsString()
-    projects : string[]
+    // @IsString()
+    // projects : string[]
 }

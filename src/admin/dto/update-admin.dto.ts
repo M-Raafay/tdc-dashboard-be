@@ -9,8 +9,8 @@ export class UpdateAdminDto extends PartialType(CreateAdminDto) {
     @IsEmail()
     email: string
     
-    @IsString()
-    @MinLength(5)
-    password: string
+    // @IsString()
+    // @MinLength(5)
+    // password: string
 
 }

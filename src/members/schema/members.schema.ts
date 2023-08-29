@@ -9,8 +9,8 @@ export class Member {
 
   _id: mongoose.Schema.Types.ObjectId
 
-  @Prop({unique:true})
-  member_id: string;
+  // @Prop({unique:true})
+  // member_id: string;
 
   @Prop()
   username: string;

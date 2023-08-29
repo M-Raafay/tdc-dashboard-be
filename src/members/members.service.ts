@@ -61,7 +61,7 @@ export class MembersService {
       
     } catch(error) {
       if (error.code === 11000 || error.code === 11001) {
-        throw new ConflictException('Duplicate key error: The resource already exists.', error.message);
+        throw new ConflictException('Duplicate email error: The resource already exists.', error.message);
       }
       throw new NotAcceptableException(`error occurred.  ${error.message}`);
      }
@@ -93,6 +93,8 @@ export class MembersService {
 
   async update(id: string, updateMemberDto: UpdateMemberDto):Promise<Member> { 
    let {projects , ...updateData} = updateMemberDto
+   console.log(updateData);
+   
    try{
     const data =await this.memberModel.findByIdAndUpdate(id, {$set : updateData,$push : {projects}} ,{new:true})
     // const receivedData = data.toObject();
@@ -102,7 +104,7 @@ export class MembersService {
     
     return data;
    }catch(error){
-    throw new Error('error occured while updating user')
+    throw new Error(error.message)
    }
   }
 

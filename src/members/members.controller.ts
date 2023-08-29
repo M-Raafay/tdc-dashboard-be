@@ -57,8 +57,11 @@ export class MembersController {
   @Roles(Role.Admin)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateMemberDto: UpdateMemberDto) {
+    console.log(Body);
+    
     return this.membersService.update(id, updateMemberDto);
   }
+
 
   @Roles(Role.Admin)
   @Delete(':id')

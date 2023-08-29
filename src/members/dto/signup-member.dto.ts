@@ -3,9 +3,9 @@ import { IsEmail, IsNotEmpty, IsNumber, IsString, MinLength } from "class-valida
 export class SignUpDto {
     _id: string
 
-    @IsString()
-    @IsNotEmpty()
-    member_id :string
+    // @IsString()
+    // @IsNotEmpty()
+    // member_id :string
 
     @IsString()
     @MinLength(3)

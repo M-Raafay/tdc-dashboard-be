@@ -4,7 +4,7 @@ import { IsEmail, IsNotEmpty, IsNumber, IsString, MinLength } from 'class-valida
 import { CreateProjectDto } from 'src/projects/dto/create-project.dto';
 import { Project } from 'src/projects/schema/projects.schema';
 
-export class UpdateMemberDto extends PartialType(CreateMemberDto) {
+export class UpdateMemberDto {
     _id: string
 
     @IsString()
@@ -22,7 +22,6 @@ export class UpdateMemberDto extends PartialType(CreateMemberDto) {
 
     @IsEmail()
     email: string;
-
 
     @IsString()
     tech_stack: string;

@@ -27,7 +27,7 @@ export class AdminService {
 
     }catch(error) {
       if (error.code === 11000 || error.code === 11001) {
-        throw new ConflictException('Duplicate key error: The resource already exists.', error.message);
+        throw new ConflictException('Duplicate email error: The resource already exists.', error.message);
       }
       throw new NotAcceptableException(`error occurred.  ${error.message}`);
     }    

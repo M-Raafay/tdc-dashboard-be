@@ -13,10 +13,7 @@ export class AppController {
   @Post('/login')
   adminLogin(@Request() req):any { // return jwt access
     return this.authService.loggedIn(req.user['_doc'])
-  //   return {
-  //     admin : req.user['_doc'],
-  //     message : 'Logged in'
-  // };
+
   }
 
   @UseGuards(JwtAuthGuard)
