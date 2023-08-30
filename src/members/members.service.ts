@@ -46,14 +46,14 @@ export class MembersService {
   //this is for creating member for admin
   async createMember(createMemberDto: CreateMemberDto) { 
 
-    const {password ,email, ...restData} = (createMemberDto)
-    const hashedPassword = await bcrypt.hash(password, 10);
-    if(!hashedPassword){
-      throw new NotAcceptableException('error in password')
-    }
+    const { email, ...restData} = (createMemberDto)
+    // const hashedPassword = await bcrypt.hash(password, 10);
+    // if(!hashedPassword){
+    //   throw new NotAcceptableException('error in password')
+    // }
     const emailLowercase= email.toLowerCase()
     try {
-      const data=  await this.memberModel.create({ email: emailLowercase,password:hashedPassword, ...restData})
+      const data=  await this.memberModel.create({ email: emailLowercase, ...restData})
       const receivedData = data.toObject();
       
       const {password ,...memberData} = receivedData

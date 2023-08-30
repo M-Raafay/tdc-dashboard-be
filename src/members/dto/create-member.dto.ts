@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from "class-validator";
+import { IsArray, IsEmail, IsMongoId, IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from "class-validator";
 import { CreateProjectDto } from "src/projects/dto/create-project.dto";
 import { Project } from "src/projects/schema/projects.schema";
 
@@ -25,9 +25,8 @@ export class CreateMemberDto {
     @IsNotEmpty()
     email: string;
 
-    @IsString()
-    @IsNotEmpty()
-    password:string
+    // @IsString()
+    // password:string
 
     @IsString()
     tech_stack: string;
@@ -35,9 +34,13 @@ export class CreateMemberDto {
     @IsString()
     team_lead: string;
 
-    // @IsNumber()
-    // expense : number;
+    @IsNumber()
+    expense : number;
 
     // @IsString()
     // projects : string[]
+
+    @IsArray()
+    @IsMongoId({ each: true }) 
+    projects: string[];// also change in update-member dto
 }

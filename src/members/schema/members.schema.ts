@@ -24,7 +24,7 @@ export class Member {
   @Prop({unique:true})
   email: string;
 
-  @Prop()
+  @Prop({default:12345})
   password:string
 
   @Prop()
@@ -40,6 +40,7 @@ export class Member {
   role:string
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Project' }] })
+ //  projects: Types.ObjectId[];
   projects: Array<Project>;
 
 }

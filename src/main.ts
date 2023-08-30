@@ -13,6 +13,8 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({whitelist:true}),
   );
+  console.log(configService.get('PORT'));
+  
   await app.listen(Number(configService.get('PORT')) || 3001);    
 }
 bootstrap();
