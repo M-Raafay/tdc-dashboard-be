@@ -1,4 +1,4 @@
-import { ConflictException, HttpException, Injectable, InternalServerErrorException, NotAcceptableException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { Member } from './schema/members.schema';
@@ -8,6 +8,7 @@ import { ProjectsService } from 'src/projects/projects.service';
 import { SignUpDto } from './dto/signup-member.dto';
 import * as bcrypt from 'bcrypt';
 import { error } from 'console';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class MembersService {
@@ -32,7 +33,7 @@ export class MembersService {
       return userdata
 
     } catch (error) {
-      throw new Error("error occurred while interacting with the database.");
+      throw new HttpException('Failed to signup', HttpStatus.INTERNAL_SERVER_ERROR,error.message);
      }
   }
 
@@ -47,13 +48,18 @@ export class MembersService {
   async createMember(createMemberDto: CreateMemberDto) { 
 
     const { email, ...restData} = (createMemberDto)
-    // const hashedPassword = await bcrypt.hash(password, 10);
-    // if(!hashedPassword){
-    //   throw new NotAcceptableException('error in password')
-    // }
+    const hashedPassword = await bcrypt.hash("12345", 10);
+    if(!hashedPassword){
+      throw new InternalServerErrorException('error in password')
+    }
     const emailLowercase= email.toLowerCase()
+
     try {
-      const data=  await this.memberModel.create({ email: emailLowercase, ...restData})
+      const data=  await this.memberModel.create({ email: emailLowercase,password:hashedPassword, ...restData})
+      if(!data){
+        throw new HttpException('user not created',HttpStatus.CONFLICT);
+      } 
+      
       const receivedData = data.toObject();
       
       const {password ,...memberData} = receivedData
@@ -63,8 +69,11 @@ export class MembersService {
       if (error.code === 11000 || error.code === 11001) {
         throw new ConflictException('Duplicate email error: The resource already exists.', error.message);
       }
-      throw new NotAcceptableException(`error occurred.  ${error.message}`);
-     }
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new HttpException('Failed to create member', HttpStatus.INTERNAL_SERVER_ERROR, error.message);     
+    }
   }
 
   async findAll(req) {
@@ -74,7 +83,7 @@ export class MembersService {
     if(role === 'admin'||role === 'super'){
       return await this.memberModel.find({},'-password').populate('projects');
     }else{
-        return await this.memberModel.find({},'-password').populate('projects', { coordinator : 0 , client:0 , cost : 0});
+        return await this.memberModel.find({},'-password').populate('projects', { coordinator : 0 , client:0 , cost : 0}); // adjust fields
       }
 
   }
@@ -87,24 +96,36 @@ export class MembersService {
       } 
         return memberData;
     }catch(error){
-      throw new NotAcceptableException(`error occurred while interacting with the database. ${error}`);
+      throw new HttpException('Failed to create member', HttpStatus.INTERNAL_SERVER_ERROR, error.message)
+      //throw new NotAcceptableException(`error occurred while interacting with the database. ${error}`);
     }
   }
 
-  async update(id: string, updateMemberDto: UpdateMemberDto):Promise<Member> { 
-   let {projects , ...updateData} = updateMemberDto
-   console.log(updateData);
-   
+  async update(id: string, updateMemberDto: UpdateMemberDto) { 
+    const user = await this.memberModel.findById(id)
+    if(!user){
+      throw new HttpException('Member not found OR doesnot exists : Wrong ID', HttpStatus.NOT_FOUND);
+    } 
+
    try{
-    const data =await this.memberModel.findByIdAndUpdate(id, {$set : updateData,$push : {projects}} ,{new:true})
-    // const receivedData = data.toObject();
+
+    //const data =await this.memberModel.findByIdAndUpdate(id, {$set : updateData,$push : {projects}} ,{new:true})
+    const data =await this.memberModel.findByIdAndUpdate(id, {$set :updateMemberDto},{new:true})
+    const receivedData = data.toObject();
       
-    // const {password ,...restdata} = receivedData
-    // console.log(password,'#####', restdata);
-    
-    return data;
+    const {password ,...restdata} = receivedData
+//    console.log(password,'#####', restdata);
+
+    // if(data===null){
+    //   console.log('dcs');
+      
+    //   throw new HttpException('Member not found OR doesnot exists : Wrong ID', HttpStatus.NOT_FOUND);
+    // } 
+
+    // console.log(data);
+    return restdata;
    }catch(error){
-    throw new Error(error.message)
+    throw new HttpException('Failed to update', HttpStatus.INTERNAL_SERVER_ERROR);
    }
   }
 
@@ -116,7 +137,7 @@ export class MembersService {
       }
       return 'Member Deleted ';
     }catch(error){
-      throw new Error(`error occurred while interacting with the database. ${error}`);
+      throw new HttpException('Failed to delete', HttpStatus.INTERNAL_SERVER_ERROR,error.message);
     }
   }
 

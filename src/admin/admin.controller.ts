@@ -7,7 +7,9 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/roles/role.decorator';
 import { Role } from 'src/roles/role.enum';
 
+
 @UseGuards(JwtAuthGuard)
+@Roles(Role.Super_Admin)
 @Controller('admins')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
@@ -20,7 +22,8 @@ export class AdminController {
   // }
 
 
-  @Roles(Role.Super_Admin)
+  // @UseGuards(JwtAuthGuard)
+  // @Roles(Role.Super_Admin)
   @Post()
   create(@Body() createAdminDto: CreateAdminDto) {
     return this.adminService.createAdmin(createAdminDto);
@@ -32,25 +35,25 @@ export class AdminController {
   } // remove.....made for testing
 
 
-  @Roles(Role.Super_Admin)
+  // @Roles(Role.Super_Admin)
   @Get()
   findAll() {
     return this.adminService.findAll();
   }
 
-  @Roles(Role.Super_Admin)
+  // @Roles(Role.Super_Admin)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.adminService.findOneById(id);
   }
   
-  @Roles(Role.Super_Admin)
+  // @Roles(Role.Super_Admin)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAdminDto: UpdateAdminDto) {
     return this.adminService.updateAdmin(id, updateAdminDto);
   }
 
-  @Roles(Role.Super_Admin)
+  // @Roles(Role.Super_Admin)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.adminService.remove(id);

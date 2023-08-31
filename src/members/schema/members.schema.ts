@@ -40,8 +40,8 @@ export class Member {
   role:string
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Project' }] })
- //  projects: Types.ObjectId[];
   projects: Array<Project>;
+   //  projects: Types.ObjectId[];
 
 }
 
