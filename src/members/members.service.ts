@@ -44,6 +44,33 @@ export class MembersService {
     return member;
   }
 
+
+  async resetMemberPassword(id:string, passwordData:object){
+    const oldData = await this.memberModel.findById(id)
+    const previousPassword= oldData.password
+    const isMatch = await bcrypt.compare(passwordData['old_password'], previousPassword);
+    if(!isMatch){
+      throw new NotAcceptableException('oldpassword doesnot match')   
+    }
+    
+    const hashedPassword = await bcrypt.hash(passwordData['new_password'], 10);
+    if(!hashedPassword){
+      throw new InternalServerErrorException('error in password')
+    }
+    try{
+      const member = await this.memberModel.findByIdAndUpdate({_id:id}, {password : hashedPassword},{new : true})
+    
+      if(!member){
+      throw new InternalServerErrorException('error in updating password');
+    } 
+
+    return member;
+  }catch(error){
+    throw new HttpException('couldnot reset password', HttpStatus.INTERNAL_SERVER_ERROR, error.message)
+  }
+
+  }
+
   //this is for creating member for admin
   async createMember(createMemberDto: CreateMemberDto) { 
 

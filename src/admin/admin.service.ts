@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
+import { ConflictException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -53,6 +53,34 @@ export class AdminService {
   }catch(error){
       throw new Error(`error occurred while interacting with the database. ${error}`);
     }
+  }
+
+  // used in reset password
+  async resetAdminPassword(id:string, passwordData:object){
+
+    const oldData = await this.adminModel.findById(id)
+    const previousPassword= oldData.password
+    const isMatch = await bcrypt.compare(passwordData['old_password'], previousPassword);
+    if(!isMatch){
+      throw new NotAcceptableException('oldpassword doesnot match')   
+    }
+    
+    const hashedPassword = await bcrypt.hash(passwordData['new_password'], 10);
+    if(!hashedPassword){
+      throw new InternalServerErrorException('error in password')
+    }
+    try{
+      const admin = await this.adminModel.findByIdAndUpdate({_id:id}, {password : hashedPassword},{new : true})
+    
+      if(!admin){
+      throw new InternalServerErrorException('error in updating password');
+    } 
+
+    return admin;
+  }catch(error){
+    throw new HttpException('couldnot reset password', HttpStatus.INTERNAL_SERVER_ERROR, error.message)
+  }
+
   }
 
   // used in auth

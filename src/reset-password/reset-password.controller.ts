@@ -1,34 +1,42 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete,Request, UseGuards } from '@nestjs/common';
 import { ResetPasswordService } from './reset-password.service';
-import { CreateResetPasswordDto } from './dto/create-reset-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UpdateResetPasswordDto } from './dto/update-reset-password.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('reset-password')
 export class ResetPasswordController {
   constructor(private readonly resetPasswordService: ResetPasswordService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  resetPassword(@Body('email') email: string) {
-    return this.resetPasswordService.resetPassword(email);
+  resetPassword(@Body() resetPasswordDto:ResetPasswordDto, @Request() req:any){
+    return this.resetPasswordService.resetPassword(resetPasswordDto,req.user)
   }
 
-  @Get()
-  findAll() {
-    return this.resetPasswordService.findAll();
-  }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.resetPasswordService.findOne(+id);
-  }
+  // @Post()
+  // resetPassword(@Body('email') email: string) {
+  //   return this.resetPasswordService.resetPassword(email);
+  // }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateResetPasswordDto: UpdateResetPasswordDto) {
-    return this.resetPasswordService.update(+id, updateResetPasswordDto);
-  }
+  // @Get()
+  // findAll() {
+  //   return this.resetPasswordService.findAll();
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.resetPasswordService.remove(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.resetPasswordService.findOne(+id);
+  // }
+
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateResetPasswordDto: UpdateResetPasswordDto) {
+  //   return this.resetPasswordService.update(+id, updateResetPasswordDto);
+  // }
+
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.resetPasswordService.remove(+id);
+  // }
 }
