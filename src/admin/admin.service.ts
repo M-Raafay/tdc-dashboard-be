@@ -58,7 +58,6 @@ export class AdminService {
   // used in reset password
   async resetAdminPassword(id:string, passwordData:object){
 
-    const checkchange =0
     const oldData = await this.adminModel.findById(id)
     const previousPassword= oldData.password
     const isMatch = await bcrypt.compare(passwordData['old_password'], previousPassword);
