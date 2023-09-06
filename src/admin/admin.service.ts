@@ -34,9 +34,8 @@ export class AdminService {
   }
 
   async findAll() {
-
     try{
-      const adminData =  await this.adminModel.find({ _id: { $ne: '64e88b6a96bb981675894a94' } },'-password')
+      const adminData =  await this.adminModel.find({},'-password')
       return adminData;
 
     }catch(error){
