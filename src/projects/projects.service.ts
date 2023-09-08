@@ -34,6 +34,6 @@ export class ProjectsService {
 
   async remove(id: string) {
     await this.projectModel.findByIdAndDelete(id);
-    return 'Project Deleted'
+    return {message :'Project Deleted'}
   }
 }

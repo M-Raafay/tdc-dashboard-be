@@ -153,7 +153,7 @@ export class AdminService {
       if(!admin){
         throw new NotFoundException('Admin not found OR doesnot exists : Wrong ID');
       }
-      return `Admin ${admin.admin_name} deleted`;
+      return {message:`Admin ${admin.admin_name} deleted`};
     }catch(error){
       throw new Error(`error occurred while interacting with the database. ${error}`);
     }

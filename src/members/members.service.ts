@@ -179,7 +179,7 @@ export class MembersService {
       if(!member){
         throw new NotFoundException('Member not found OR doesnot exists : Wrong ID');
       }
-      return 'Member Deleted ';
+      return {message:'Member Deleted '};
     }catch(error){
       throw new HttpException('Failed to delete', HttpStatus.INTERNAL_SERVER_ERROR,error.message);
     }
