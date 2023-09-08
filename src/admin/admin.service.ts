@@ -36,6 +36,7 @@ export class AdminService {
   async findAll() {
     try{
       const adminData =  await this.adminModel.find({_id:{$ne:'64e88b6a96bb981675894a94'}}, '-password')
+      // make it dynamic....token check extract id and place in $ne
 //      find({_id: { $ne: '64f032a70dad1b907f496e29' }},'-password')
       return adminData;
 
@@ -100,10 +101,12 @@ export class AdminService {
   async findAdminByMail(mail : string){
     const adminMail = mail.toLowerCase();    
     const admin = await this.adminModel.findOne({email:adminMail})
+    //console.log(admin);
+    
     // if(!admin){
     //   console.log('s');
       
-    //   throw new NotFoundException('Admin not found : Wrong Name');
+    //   throw new NotFoundException('Admin not found : Wrong mail');
     // }
     return admin;
   }

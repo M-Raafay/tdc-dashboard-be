@@ -17,6 +17,9 @@ export class Admin {
   
   @Prop({default: 'admin'})
   role: string;
+
+  @Prop({default: Date.now })
+  createdAt: Date
   
 }
 

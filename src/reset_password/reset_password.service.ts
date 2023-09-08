@@ -1,19 +1,19 @@
 import { HttpException, HttpStatus, Injectable, InternalServerErrorException, NotAcceptableException, NotFoundException } from '@nestjs/common';
-import { UpdateResetPasswordDto } from './dto/update-reset-password.dto';
 import { AdminService } from 'src/admin/admin.service';
 import { MembersService } from 'src/members/members.service';
 import * as crypto from 'crypto'
 import { Token } from './schema/resetToken.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ResetPasswordDto } from './dto/reset_password.dto';
 import { Member } from 'src/members/schema/members.schema';
 
 @Injectable()
 export class ResetPasswordService {
     constructor  (@InjectModel('Token') private tokenModel: Model<Token>,
     private adminService : AdminService ,
-    private memberService: MembersService){}
+    private memberService: MembersService,
+    ){}
 
 
 

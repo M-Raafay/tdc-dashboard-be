@@ -12,7 +12,9 @@ import { RolesGuard } from './roles/roles.guard';
 import { AuthGuard } from './auth/authenticated.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { ResetPasswordModule } from './reset-password/reset-password.module';
+import { ResetPasswordModule } from './reset_password/reset_password.module';
+import { ForgetPasswordModule } from './forget_password/forget_password.module';
+import { MailerModule } from './mailer/mailer.module';
 
 @Module({
   imports: [
@@ -40,6 +42,8 @@ import { ResetPasswordModule } from './reset-password/reset-password.module';
     AdminModule,
     AuthModule,
     ResetPasswordModule,
+    ForgetPasswordModule,
+    MailerModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService,

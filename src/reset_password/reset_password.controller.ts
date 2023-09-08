@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete,Request, UseGuards } from '@nestjs/common';
-import { ResetPasswordService } from './reset-password.service';
-import { ResetPasswordDto } from './dto/reset-password.dto';
-import { UpdateResetPasswordDto } from './dto/update-reset-password.dto';
+import { ResetPasswordService } from './reset_password.service';
+import { ResetPasswordDto } from './dto/reset_password.dto';
+
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('reset-password')

@@ -30,10 +30,10 @@ export class Member {
   @Prop()
   tech_stack: string;
 
-  @Prop()
+  @Prop({default:""})
   team_lead: string;
 
-  @Prop()
+  @Prop({default:0})
   expense: number;
 
   @Prop({default: 'user'})
@@ -42,6 +42,9 @@ export class Member {
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Project' }] })
   projects: Array<Project>;
    //  projects: Types.ObjectId[];
+
+  @Prop({default: Date.now })
+  createdAt: Date
 
 }
 

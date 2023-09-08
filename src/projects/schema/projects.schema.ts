@@ -40,6 +40,9 @@ export class Project {
 
   @Prop()
   cost: string;
+
+  @Prop({default: Date.now })
+  createdAt: Date
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);
