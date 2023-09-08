@@ -137,9 +137,11 @@ export class AdminService {
 
     const isMatch = await bcrypt.compare(password, savedPassword);
     if(isMatch){
-        const updatedRecord = this.adminModel.findByIdAndUpdate({_id : id}, {email :adminMail, ...restData},{new:true})
+        const updatedRecord = await this.adminModel.findByIdAndUpdate({_id : id}, {email :adminMail, ...restData},{new:true})
         //const {password, ...adminData} = updatedRecord 
-        return updatedRecord
+        const receivedData = updatedRecord.toObject();
+        const {password ,...restdata} = receivedData
+        return restData;
     }else{
       throw new NotAcceptableException('wrong password')
     }

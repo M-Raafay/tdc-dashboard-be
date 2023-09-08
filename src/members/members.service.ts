@@ -127,7 +127,7 @@ export class MembersService {
     if(role === 'admin'||role === 'super'){
       return await this.memberModel.find({},'-password').populate('projects');
     }else{
-        return await this.memberModel.find({},'-password').populate('projects', { coordinator : 0 , client:0 , cost : 0}); // adjust fields
+        return await this.memberModel.find({},'-password').populate('projects', { coordinator : 0 ,platform:0, client:0 ,consultant:0, cost : 0, start_date:0, end_date:0, createdAt:0}); // adjust fields
       }
 
   }

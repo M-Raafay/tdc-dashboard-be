@@ -11,10 +11,6 @@ export class ForgetPasswordController {
     return this.forgetPasswordService.checkMail(email);
   }
 
-  // @Post()
-  // create(@Body() createForgetPasswordDto: CreateForgetPasswordDto) {
-  //   return this.forgetPasswordService.create(createForgetPasswordDto);
-  // }
 
 
 
