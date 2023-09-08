@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { ResetPasswordDto } from './dto/reset_password.dto';
 import { AdminService } from 'src/admin/admin.service';
 import { MembersService } from 'src/members/members.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from 'src/mailer/mailer.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ForgetPasswordService {
@@ -56,12 +57,57 @@ export class ForgetPasswordService {
 
 
 
-  resetForgotPassword(id : string,token:string,resetPasswordDTo:ResetPasswordDto){
+  async resetForgotPassword(id : string,token:string,resetPasswordDTo:ResetPasswordDto){
 
-    console.log(id, 'scscs' , token, 'token', resetPasswordDTo);
+
+    // check if id and token are being sent in request
+
+    try{
+    const verifiedToken = this.jwtService.verify(token)
+   }catch(error){
+    throw new NotAcceptableException('Token verification failed', error.message)
     
+   }
+
+   const {new_password, confirm_password} = resetPasswordDTo
+
+   if(new_password !== confirm_password){
+    throw new NotAcceptableException('passwords donot match')
+   }
+    const hashedPassword = await bcrypt.hash(new_password,10)
+    
+
+    const decodedToken = this.jwtService.decode(token)
+
+
+
+   if(decodedToken['_id'] !== id){
+    throw new NotAcceptableException('user is not verified')
+   } 
+    if(decodedToken['role']==='admin'|| decodedToken['role']==='super'){
+      const adminData = this.adminService.findByIdAndUpdatePassword(decodedToken['_id'], hashedPassword)
+      if(!adminData){
+        throw new NotAcceptableException('failed to update password')
+      }
+       return {message : "Password updated successfully" }
+    }
+    
+    if(decodedToken['role']==='user'){
+      const memberData = this.memberService.findByIdAndUpdatePassword(decodedToken['_id'], hashedPassword)
+      if(!memberData){
+        throw new NotAcceptableException('failed to update password')
+      }
+       return {message : "Password updated successfully" }
+    }
+
+    return null;
+
     
   }
+
+
+
+  
 
   // findAll() {
   //   return `This action returns all forgetPassword`;

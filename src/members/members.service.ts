@@ -71,6 +71,23 @@ export class MembersService {
 
   }
 
+
+  async findByIdAndUpdatePassword(id:string, new_password:string){
+    const data = await this.memberModel.findById(id)
+    console.log(data);
+    if(!data){
+      throw new NotFoundException('admin not found')
+    }
+
+    const updatePassword = await this.memberModel.findByIdAndUpdate({_id : id}, {password :new_password},{new:true})
+    if(!updatePassword){
+      throw new NotFoundException('admin not found : password not updated')
+    }
+
+    return updatePassword
+
+  }
+
   //this is for creating member for admin
   async createMember(createMemberDto: CreateMemberDto) { 
 

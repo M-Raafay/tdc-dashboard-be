@@ -19,15 +19,14 @@ export class ForgetPasswordController {
 
 
   @Post(':id/:token')
-  resetPassword(@Param('id') id: string,
+  resetPasfindAllsword(@Param('id') id: string,
     @Param('token')token: string, 
     @Body() resetPasswordDTo:ResetPasswordDto){
-
       return this.forgetPasswordService.resetForgotPassword(id,token,resetPasswordDTo)
     }
 
   // @Get()
-  // findAll() {
+  // () {
   //   return this.forgetPasswordService.findAll();
   // }
 

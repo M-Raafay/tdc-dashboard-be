@@ -25,6 +25,7 @@ export class SignUpDto {
 
     @IsString()
     @IsNotEmpty()
+    @MinLength(5)
     password:string
 
     @IsString()

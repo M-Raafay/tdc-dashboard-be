@@ -111,6 +111,22 @@ export class AdminService {
     return admin;
   }
 
+  async findByIdAndUpdatePassword(id:string, new_password:string){
+    const data = await this.adminModel.findById(id)
+    console.log(data);
+    if(!data){
+      throw new NotFoundException('admin not found')
+    }
+
+    const updatePassword = await this.adminModel.findByIdAndUpdate({_id : id}, {password :new_password},{new:true})
+    if(!updatePassword){
+      throw new NotFoundException('admin not found : password not updated')
+    }
+
+    return updatePassword
+
+  }
+
   async updateAdmin(id: string, updateAdminDto: UpdateAdminDto) {
 
     const {password, email, ...restData} = updateAdminDto;
