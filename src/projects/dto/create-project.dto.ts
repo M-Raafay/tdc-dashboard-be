@@ -1,4 +1,5 @@
-import { IsDate, IsISO8601, IsNotEmpty, IsString } from "class-validator"
+import { IsDate, IsEnum, IsISO8601, IsNotEmpty, IsString } from "class-validator"
+import { Status } from "../schema/projects.schema"
 
 export class CreateProjectDto {
     _id : string
@@ -34,6 +35,9 @@ export class CreateProjectDto {
     @IsString()
     @IsNotEmpty()
     consultant :string
+
+    @IsEnum(Status)
+    status: Status;
 
     @IsISO8601()
     @IsNotEmpty()

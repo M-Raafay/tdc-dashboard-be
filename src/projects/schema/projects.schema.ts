@@ -4,8 +4,15 @@ import { Details, DetailsSchema } from './details.schema';
 
 export type ProjectDocument = HydratedDocument<Project>;
 
+export enum Status {
+  Pending = 'pending',
+  Completed = 'completed',
+}
+
 @Schema()
 export class Project {
+
+  
   _id: mongoose.Schema.Types.ObjectId
 
   @Prop()
@@ -31,6 +38,9 @@ export class Project {
 
   @Prop()
   consultant: string;
+
+  @Prop({ type: String, enum: Object.values(Status), default: Status.Pending })
+  status: Status;
 
   @Prop()
   start_date: Date;
