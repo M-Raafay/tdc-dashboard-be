@@ -46,7 +46,7 @@ export class ForgetPasswordService {
     
     const jwtToken = this.jwtService.sign(payload)
 
-    const link = `http://localhost:3000/newpassword/id/${_id}/token/${jwtToken}`
+    const link = `http://localhost:3000/newpassword?id=${_id}&token=${jwtToken}`
 
     const emailBody = `<p>Click this URL to reset password:</p>
                        <a href="${link}">${link}</a>`;
@@ -106,6 +106,22 @@ export class ForgetPasswordService {
   }
 
 
+  verifyToken(id:string, token:string){
+    try{
+      const verifiedToken = this.jwtService.verify(token)
+     }catch(error){
+      throw new NotAcceptableException('Token verification failed', error.message)
+     }
+
+     const decodedToken = this.jwtService.decode(token)
+
+     if(decodedToken['_id'] !== id){
+      return {message : 'User Not Verified'}
+     }else {
+      return {message : 'User Verified'}
+     }
+
+  }
 
   
 

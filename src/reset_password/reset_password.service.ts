@@ -16,7 +16,6 @@ export class ResetPasswordService {
     ){}
 
 
-
     async resetPassword(resetPasswordDto:ResetPasswordDto, user:object){
 
       if(resetPasswordDto.new_password !== resetPasswordDto.confirm_password){

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ForgetPasswordService } from './forget_password.service';
 import {  ResetPasswordDto } from './dto/reset_password.dto';
 
@@ -12,11 +12,18 @@ export class ForgetPasswordController {
   }
 
 
+  @Post('verify')
+  tokenVerify(@Query('id') id: string,
+  @Query('token') token: string){
+
+    return this.forgetPasswordService.verifyToken(id,token)
+  }
 
 
-  @Post(':id/:token')
-  resetPasfindAllsword(@Param('id') id: string,
-    @Param('token')token: string, 
+
+  @Post('reset-password')
+  resetForgotPassword(@Query('id') id: string,
+    @Query('token')token: string, 
     @Body() resetPasswordDTo:ResetPasswordDto){
       return this.forgetPasswordService.resetForgotPassword(id,token,resetPasswordDTo)
     }
