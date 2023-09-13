@@ -8,7 +8,15 @@ import * as cors from 'cors';
 async function bootstrap() {
   const app: INestApplication = await NestFactory.create(AppModule);
   
-  app.use(cors());
+
+  //app.use(cors());
+
+  const corsOptions= {
+    origin: "*",
+    host:"*"
+  }
+
+  app.enableCors(corsOptions)
   const configService = app.get(ConfigService)
 
   app.useGlobalPipes(
