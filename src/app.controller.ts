@@ -19,6 +19,6 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   @Get('protected')
   checkJwt(@GetUser() user: User) {
-    return user._id;
+    return user;
   }
 }

@@ -29,11 +29,9 @@ export class Member {
   @Prop()
   role: Role;
 
-  // //@TODO
   @Prop({ type: Types.ObjectId, ref: 'Department' })
   department: Department; /// add reference to department schema. update dto
 
-  // //@TODO
   @Prop({ type: Types.ObjectId, ref: 'Teams' })
   teams: Teams; /// add reference to TEAMS  schema array. update dto
 

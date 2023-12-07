@@ -6,7 +6,6 @@ import { GetUser } from 'src/auth/getuser.decorator';
 import { Member, Role } from 'src/members/schema/members.schema';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/roles/role.decorator';
-//import { Role } from 'src/roles/role.enum';
 
 @UseGuards(JwtAuthGuard)
 @Roles(Role.ADMIN)

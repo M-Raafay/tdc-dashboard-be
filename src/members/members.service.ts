@@ -13,10 +13,8 @@ import { UpdateMemberDto } from './dto/update-member.dto';
 import { Member } from './schema/members.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-//import { ProjectsService } from 'src/projects/projects.service';
-//import { SignUpDto } from './dto/signup-member.dto';
 import * as bcrypt from 'bcrypt';
-import { generateEmailContent, generateRandomPassword } from 'src/utils/utils';
+import { emailAccountCreation, generateRandomPassword } from 'src/utils/utils';
 import { MailerService } from 'src/mailer/mailer.service';
 import { ConfigService } from '@nestjs/config';
 import { LogInMemberDto } from './dto/login-member.dto';
@@ -34,6 +32,7 @@ export class MembersService {
   ) {}
 
   // new create member with password sent in mail
+  // @ TODO check if the department and team exists in their respective tables??
   async createMember(createMemberDto: CreateMemberDto, user) {
     const randomPassword = generateRandomPassword(10);
 
@@ -50,7 +49,7 @@ export class MembersService {
       });
       const receivedData = userCreated.toObject();
 
-      const template = generateEmailContent(
+      const template = emailAccountCreation(
         createMemberDto.name,
         createMemberDto.email,
         randomPassword,
@@ -85,11 +84,11 @@ export class MembersService {
     if (await bcrypt.compare(logInMemberDto.password, user.password)) {
       const payload = {
         sub: user._id,
-        email: user.email,
+        //email: user.email,
         role: user.role,
       };
       const accesstoken = this.jwtService.sign(payload);
-      return { message: 'Welcome', accesstoken: accesstoken };
+      return { message: 'Welcome', accesstoken: accesstoken , name: user.name, role: user.role};
     } else {
       throw new BadRequestException('Wrong Credentials');
     }
@@ -104,7 +103,7 @@ export class MembersService {
     const userData = await this.memberModel.findById(user._id);
     if (
       userData &&
-      (await bcrypt.compare( resetPasswordDto.old_password , userData.password))
+      (await bcrypt.compare(resetPasswordDto.old_password, userData.password))
     ) {
       const hashedPassword = await bcrypt.hash(
         resetPasswordDto.new_password,
@@ -121,7 +120,7 @@ export class MembersService {
         { new: true },
       );
 
-      return { message: `Password for ${user.name} updated Successfully` };
+      return { message: `Password for ${userData.name} updated Successfully` };
     } else {
       throw new NotAcceptableException('OldPassword is incorrect');
     }
@@ -144,41 +143,42 @@ export class MembersService {
   //   return member;
   // }
 
-  async resetMemberPassword(id: string, passwordData: object) {
-    const oldData = await this.memberModel.findById(id);
-    const previousPassword = oldData.password;
-    const isMatch = await bcrypt.compare(
-      passwordData['old_password'],
-      previousPassword,
-    );
-    if (!isMatch) {
-      throw new NotAcceptableException('oldpassword doesnot match');
-    }
+  //@ Remove
+  // async resetMemberPassword(id: string, passwordData: object) {
+  //   const oldData = await this.memberModel.findById(id);
+  //   const previousPassword = oldData.password;
+  //   const isMatch = await bcrypt.compare(
+  //     passwordData['old_password'],
+  //     previousPassword,
+  //   );
+  //   if (!isMatch) {
+  //     throw new NotAcceptableException('oldpassword doesnot match');
+  //   }
 
-    const hashedPassword = await bcrypt.hash(passwordData['new_password'], 10);
-    if (!hashedPassword) {
-      throw new InternalServerErrorException('error in password');
-    }
-    try {
-      const member = await this.memberModel.findByIdAndUpdate(
-        { _id: id },
-        { password: hashedPassword },
-        { new: true },
-      );
+  //   const hashedPassword = await bcrypt.hash(passwordData['new_password'], 10);
+  //   if (!hashedPassword) {
+  //     throw new InternalServerErrorException('error in password');
+  //   }
+  //   try {
+  //     const member = await this.memberModel.findByIdAndUpdate(
+  //       { _id: id },
+  //       { password: hashedPassword },
+  //       { new: true },
+  //     );
 
-      if (!member) {
-        throw new InternalServerErrorException('error in updating password');
-      }
+  //     if (!member) {
+  //       throw new InternalServerErrorException('error in updating password');
+  //     }
 
-      return member;
-    } catch (error) {
-      throw new HttpException(
-        'couldnot reset password',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        error.message,
-      );
-    }
-  }
+  //     return member;
+  //   } catch (error) {
+  //     throw new HttpException(
+  //       'couldnot reset password',
+  //       HttpStatus.INTERNAL_SERVER_ERROR,
+  //       error.message,
+  //     );
+  //   }
+  // }
 
   async findByIdAndUpdatePassword(id: string, new_password: string) {
     const data = await this.memberModel.findById(id);
@@ -199,6 +199,7 @@ export class MembersService {
     return updatePassword;
   }
 
+  //@ TODO remeove fields from data and populate
   async findAll() {
     // const user = req.user;
     // const { role } = req.user; // use this to achieve user.role add try catch
@@ -220,7 +221,7 @@ export class MembersService {
     return await this.memberModel.find().populate('createdBy');
   }
 
-  async findOneById(id: string) {
+  async findMemberById(id: string) {
     try {
       const memberData = await this.memberModel.findById(
         { _id: id },
@@ -286,11 +287,12 @@ export class MembersService {
       }
       return { message: 'Member Deleted ' };
     } catch (error) {
-      throw new HttpException(
-        'Failed to delete',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        error.message,
-      );
+      throw new HttpException(error.message, error.statusCode)
+      // throw new HttpException(
+      //   'Failed to delete',
+      //   HttpStatus.INTERNAL_SERVER_ERROR,
+      //   error.message,
+      // );
     }
   }
 }

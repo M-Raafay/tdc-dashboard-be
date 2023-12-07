@@ -70,7 +70,7 @@ export class MembersController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.membersService.findOneById(id);
+    return this.membersService.findMemberById(id);
   }
 
   @Patch(':id')
