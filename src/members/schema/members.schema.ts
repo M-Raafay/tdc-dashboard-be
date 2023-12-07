@@ -1,51 +1,53 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument, Types } from 'mongoose';
-import { Project } from 'src/projects/schema/projects.schema';
+import { HydratedDocument, Types } from 'mongoose';
+import { Department } from 'src/department/schema/department.schema';
+import { Teams } from 'src/teams/schema/teams.schema';
 
 export type MemberDocument = HydratedDocument<Member>;
 
+export enum Role {
+  SUPERADMIN = 'SUPERADMIN',
+  ADMIN = 'ADMIN',
+  HR = 'HR',
+  BUSINESS_MANAGER = 'BUSINESS_MANAGER',
+  SALES_AGENT = 'SALES_AGENT',
+  TECH = 'TECH',
+  HELPER = 'HELPER',
+}
+
 @Schema()
 export class Member {
-
-  _id: mongoose.Schema.Types.ObjectId
-
-  // @Prop({unique:true})
-  // member_id: string;
-
   @Prop()
-  username: string;
+  name: string;
 
-  @Prop()
-  first_name: string;
-
-  @Prop()
-  last_name: string;
-
-  @Prop({unique:true})
+  @Prop({ unique: true })
   email: string;
 
-  @Prop({default:12345})
-  password:string
+  @Prop()
+  password: string;
 
   @Prop()
-  tech_stack: string;
+  role: Role;
 
-  @Prop({default:""})
-  team_lead: string;
+  // //@TODO
+  @Prop({ type: Types.ObjectId, ref: 'Department' })
+  department: Department; /// add reference to department schema. update dto
 
-  @Prop({default:0})
-  expense: number;
+  // //@TODO
+  @Prop({ type: Types.ObjectId, ref: 'Teams' })
+  teams: Teams; /// add reference to TEAMS  schema array. update dto
 
-  @Prop({default: 'user'})
-  role:string
+  @Prop({ default: false })
+  is_departmentHead: boolean;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Project' }] })
-  projects: Array<Project>;
-   //  projects: Types.ObjectId[];
+  @Prop({ default: false })
+  is_teamHead: boolean;
 
-  @Prop({default: Date.now })
-  createdAt: Date
+  @Prop({ default: Date.now })
+  createdAt: Date;
 
+  @Prop({ type: Types.ObjectId, ref: 'Member' })
+  createdBy: Member;
 }
 
 export const MemberSchema = SchemaFactory.createForClass(Member);

@@ -1,46 +1,42 @@
-import { IsArray, IsEmail, IsMongoId, IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from "class-validator";
-import { CreateProjectDto } from "src/projects/dto/create-project.dto";
-import { Project } from "src/projects/schema/projects.schema";
+import { Transform } from 'class-transformer';
+import {
+  IsEmail,
+  IsEnum,
+  IsMongoId,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
+import { Role } from '../schema/members.schema';
 
 export class CreateMemberDto {
-    _id: string
+  @IsString()
+  @MinLength(3)
+  @IsNotEmpty()
+  name: string;
 
-    // @IsString()
-    // @IsNotEmpty()
-    // member_id :string
+  @IsEmail()
+  @IsNotEmpty()
+  @Transform(({ value }) => value.toLowerCase())
+  email: string;
 
-    @IsString()
-    @MinLength(3)
-    @IsNotEmpty()
-    username :string
+  @IsEnum(Role)
+  role: Role;
 
-    @IsString()
-    @IsNotEmpty()
-    first_name: string;
-    
-    @IsString()
-    last_name: string;
+  @IsMongoId()
+  department: string;
 
-    @IsEmail()
-    @IsNotEmpty()
-    email: string;
+  @IsMongoId()
+  teams: string;
 
-    // @IsString()
-    // password:string
+  // @IsBoolean()
+  // is_departmentHead: boolean;
 
-    @IsString()
-    tech_stack: string;
+  // @IsBoolean()
+  // is_teamHead: boolean;
 
-    @IsString()
-    team_lead: string;
-
-    @IsNumber()
-    expense : number;
-
-    // @IsString()
-    // projects : string[]
-
-    @IsArray()
-    @IsMongoId({ each: true }) 
-    projects: string[];// also change in update-member dto
+  // @IsMongoId()
+  // createdBy: string;
 }

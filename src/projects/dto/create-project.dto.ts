@@ -1,54 +1,70 @@
-import { IsDate, IsEnum, IsISO8601, IsNotEmpty, IsString } from "class-validator"
-import { Status } from "../schema/projects.schema"
+import { IsDate, IsEnum, IsISO8601, IsMongoId, IsNotEmpty, IsString } from "class-validator"
+import { DurationUnit, RateType, Status } from "../schema/projects.schema"
 
 export class CreateProjectDto {
-    _id : string
+  _id: string;
 
-    @IsString()
-    @IsNotEmpty()
-    name :string
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 
-    @IsString()
-    @IsNotEmpty()
-    stack :string
+  @IsString()
+  @IsNotEmpty()
+  stack: string;
 
-    @IsString()
-    @IsNotEmpty()
-    team_lead : string
+  @IsString()
+  @IsNotEmpty()
+  @IsMongoId()
+  team_lead: string;
 
-    @IsString()
-    @IsNotEmpty()
-    duration :string
+  // @IsString()
+  // @IsNotEmpty()
+  // tech_coordinator: string;
 
-    @IsString()
-    @IsNotEmpty()
-    coordinator :string
+  @IsString()
+  @IsNotEmpty()
+  @IsMongoId()
+  sales_coordinator: string;
 
-    @IsString()
-    @IsNotEmpty()
-    platform :string
+  @IsMongoId({ each: true })
+  resource_assigned: string[];
 
-    @IsString()
-    @IsNotEmpty()
-    client :string
+  @IsString()
+  @IsNotEmpty()
+  platform: string;
 
-    @IsString()
-    @IsNotEmpty()
-    consultant :string
+  @IsEnum(RateType)
+  contract_type: RateType;
 
-    @IsEnum(Status)
-    status: Status;
+  @IsString()
+  @IsNotEmpty()
+  client: string;
 
-    @IsISO8601()
-    @IsNotEmpty()
-    start_date :Date
+  @IsString()
+  @IsNotEmpty()
+  consultant: string;
 
-    @IsISO8601()
-    @IsNotEmpty()
-    end_date :Date
-    
-    @IsString()
-    @IsNotEmpty()
-    cost :string
+  @IsEnum(Status)
+  status: Status;
 
+  @IsString()
+  @IsNotEmpty()
+  duration: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(DurationUnit)
+  duration_unit: DurationUnit;
+
+  @IsISO8601()
+  @IsNotEmpty()
+  start_date: Date;
+
+  @IsISO8601()
+  @IsNotEmpty()
+  end_date: Date;
+
+  @IsString()
+  @IsNotEmpty()
+  cost: string;
 }

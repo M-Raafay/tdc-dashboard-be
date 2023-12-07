@@ -1,6 +1,6 @@
 import { Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { ResetPasswordDto } from './dto/reset_password.dto';
-import { AdminService } from 'src/admin/admin.service';
+//import { AdminService } from 'src/admin/admin.service';
 import { MembersService } from 'src/members/members.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -11,7 +11,7 @@ import * as bcrypt from 'bcrypt';
 export class ForgetPasswordService {
 
   constructor  (
-    private adminService : AdminService ,
+   // private adminService : AdminService ,
     private memberService: MembersService,
     private jwtService: JwtService,
     private readonly emailService: MailerService,
@@ -20,17 +20,21 @@ export class ForgetPasswordService {
 
   async checkMail(email:string) {
 
-    const adminData = await this.adminService.findAdminByMail(email)
-    const memberData = await this.memberService.findMember(email)
+    //const adminData = await this.adminService.findAdminByMail(email)
+    const memberData = await this.memberService.findMemberByEmail(email)
     
-    if(!memberData && !adminData){
+    if(!memberData 
+      //&& !adminData
+      ){
       throw new NotFoundException('wrong email: user doesnot exists')
-    }else if(adminData){
+    }
+    // else if(adminData){
 
-      const res = this.createTokenAndMail(adminData)
-      return res
+    //   const res = this.createTokenAndMail(adminData)
+    //   return res
 
-    }else if(memberData){
+    // }
+    else if(memberData){
       const res = this.createTokenAndMail(memberData)
       return res
 
@@ -84,11 +88,11 @@ export class ForgetPasswordService {
    if(decodedToken['_id'] !== id){
     throw new NotAcceptableException('user is not verified')
    } 
-    if(decodedToken['role']==='admin'|| decodedToken['role']==='super'){
-      const adminData = this.adminService.findByIdAndUpdatePassword(decodedToken['_id'], hashedPassword)
-      if(!adminData){
-        throw new NotAcceptableException('failed to update password')
-      }
+    if(decodedToken['role']==='ADMIN'|| decodedToken['role']==='SUPERADMIN'){
+      // const adminData = this.adminService.findByIdAndUpdatePassword(decodedToken['_id'], hashedPassword)
+      // if(!adminData){
+      //   throw new NotAcceptableException('failed to update password')
+      // }
        return {message : "Password updated successfully" }
     }
     

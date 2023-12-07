@@ -1,69 +1,85 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete,Request, UseGuards, Header, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Request,
+  UseGuards,
+  Header,
+  Req,
+  NotAcceptableException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { MembersService } from './members.service';
 import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/roles/role.decorator';
-import { Role } from 'src/roles/role.enum';
-import { LocalAuthGuard } from 'src/auth/local.auth.guard';
-import { RolesGuard } from 'src/roles/roles.guard';
-import { SignUpDto } from './dto/signup-member.dto';
-//import { AuthService } from 'src/auth/auth.service';
+import { LogInMemberDto } from './dto/login-member.dto';
+import { GetUser } from 'src/auth/getuser.decorator';
+import { Member, Role } from './schema/members.schema';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
-//@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
+// @Roles(Role.HR)
 @Controller('members')
 export class MembersController {
-  constructor(private readonly membersService: MembersService ,
-    ) {}
-
-  @Post('/signup')
-  createForMember(@Body() signupDto: SignUpDto){
-    return this.membersService.signup(signupDto)
-
-  }
-
-  // @UseGuards(LocalAuthGuard)
-  // @Post('/login')
-  // memberLogin(@Request() req):any { // return jwt access
-  //   console.log(req.user);
-    
-  //   return this.authService.loggedIn(req.user['_doc'])
-  // //   return {
-  // //     admin : req.user['_doc'],
-  // //     message : 'Logged in'
-  // // };
-  // }
+  constructor(private readonly membersService: MembersService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Roles(Role.Admin)
-  @Post()
-  create(@Body() createMemberDto: CreateMemberDto) {
-    return this.membersService.createMember(createMemberDto);
+  @Roles(Role.HR)
+  @Post('create')
+  create(@Body() createMemberDto: CreateMemberDto, @GetUser() user: Member) {
+    const forbiddenRoles = ['SUPERADMIN', 'ADMIN'];
+
+    if (user.role === 'HR' && forbiddenRoles.includes(createMemberDto.role)) {
+      throw new ForbiddenException('User doesnot have access');
+    }
+    return this.membersService.createMember(createMemberDto, user);
+  }
+
+  @Post('login')
+  login(@Body() logInMemberDto: LogInMemberDto) {
+    return this.membersService.login(logInMemberDto);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Roles(Role.Admin,Role.Super_Admin,Role.User)
+  @Post('reset_password')
+  resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+    @GetUser() user: Member,
+  ) {
+    return this.membersService.resetPassword(resetPasswordDto, user);
+  }
+
+  //@REMOVE made for testing
+  @Get('byEmail')
+  findOnebymail(@Body('email') email: string) {
+    return this.membersService.findMemberByEmail(email);
+  }
+
+  // @UseGuards(JwtAuthGuard)
+  // @Roles(Role.ADMIN, Role.SUPER_ADMIN, Role.USER)
   @Get()
-  findAll(@Req() req):any {
-    return this.membersService.findAll(req);
+  findAll(@Req() req): any {
+    return this.membersService.findAll(); //(req);
   }
 
-  @Roles(Role.Admin)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.membersService.findOneById(id);
   }
 
-  @Roles(Role.Admin)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateMemberDto: UpdateMemberDto) {
     console.log(Body);
-    
+
     return this.membersService.update(id, updateMemberDto);
   }
 
-
-  @Roles(Role.Admin)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.membersService.remove(id);

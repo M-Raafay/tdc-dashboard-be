@@ -1,34 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
-
 
 @Injectable()
 export class MailerService {
+  private transporter;
 
-    private transporter;
-
-  constructor() {
+  constructor(private configService: ConfigService) {
+    const emailUser = this.configService.get<string>('EMAIL_USER');
+    const emailPassword = this.configService.get<string>('EMAIL_PASSWORD');
+    const mailService = this.configService.get<string>('EMAIL_SERVICE');
     this.transporter = nodemailer.createTransport({
-      service: 'gmail', 
+      service: mailService,
       auth: {
-        user: 'm.rafay28749@gmail.com',
-        pass: 'bbheylvoyuxwvktk',
+        user: emailUser,
+        pass: emailPassword,
       },
     });
   }
 
   async sendEmail(to: string, html: string) {
-    const subject = 'Forget Password request for TDC-Dashboard'
+    const subject = 'TDC-Dashboard';
     try {
       await this.transporter.sendMail({
         to,
         subject,
         html,
       });
-      return 
+      return;
     } catch (error) {
       console.error('Error sending email:', error);
+      throw new InternalServerErrorException(
+        `error sending email ${error.message}`,
+      );
     }
   }
-
 }

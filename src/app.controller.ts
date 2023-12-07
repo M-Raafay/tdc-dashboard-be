@@ -1,24 +1,24 @@
-import { Body, Controller, Get, Post,Request, UseGuards } from '@nestjs/common';
-import { AppService } from './app.service';
-import { LocalAuthGuard } from './auth/local.auth.guard';
-import { AuthGuard } from './auth/authenticated.guard';
-import { AuthService } from './auth/auth.service';
+import {
+  Controller,
+  Get,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { GetUser } from './auth/getuser.decorator';
+import { User } from './utils/interface';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService, private readonly authService: AuthService) {}
+  constructor() {}
 
-  @UseGuards(LocalAuthGuard)
-  @Post('/login')
-  adminLogin(@Request() req):any { // return jwt access
-    return this.authService.loggedIn(req.user['_doc'])
-
+  @Get()
+  getHello() {
+    return {message:'TDC-DASHBOARD is Live'};
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('protected')
-  getHello(@Request() req): string { // require bearer token
-    return req.user;
+  checkJwt(@GetUser() user: User) {
+    return user._id;
   }
 }
