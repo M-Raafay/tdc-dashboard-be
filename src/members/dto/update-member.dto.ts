@@ -1,33 +1,57 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateMemberDto } from './create-member.dto';
-import { IsEmail, IsMongoId, IsNotEmpty, IsNumber, IsString, MinLength } from 'class-validator';
-import { CreateProjectDto } from 'src/projects/dto/create-project.dto';
-import { Project } from 'src/projects/schema/projects.schema';
+import { Transform } from 'class-transformer';
+import {
+  IsArray,
+  IsEmail,
+  IsEnum,
+  IsMongoId,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
+import { Role } from '../schema/members.schema';
 
 export class UpdateMemberDto {
+  @IsString()
+  @MinLength(3)
+  @IsNotEmpty()
+  name: string;
 
-    // @IsString()
-    // member_id :string
+  @IsEmail()
+  @IsNotEmpty()
+  @Transform(({ value }) => value.toLowerCase())
+  email: string;
 
-    @IsString()
-    @MinLength(3)
-    username :string
+  @IsString()
+  @MinLength(10)
+  @MaxLength(14)
+  contactNumber: string;
 
-    @IsString()
-    first_name: string;
-    
-    @IsString()
-    last_name: string;
+  @IsEnum(Role)
+  role: Role;
 
-    @IsString()
-    tech_stack: string;
+  //   @IsOptional()
+  @IsMongoId()
+  department: string;
 
-    @IsString()
-    team_lead: string;
+  @IsArray()
+  @IsMongoId({ each: true })
+  //   @IsOptional()
+  teams: string[];
 
-    @IsNumber()
-    expense: number;
+  @IsString()
+  //   @IsOptional()
+  emergencyContactName: string;
 
-    @IsMongoId({ each: true }) 
-    projects : string[]
+  @IsString()
+  @MinLength(10)
+  @MaxLength(14)
+  //   @IsOptional()
+  emergencyContactNumber: string;
+
+  @IsString()
+  //   @IsOptional()
+  emergencyContactRelation: string;
 }

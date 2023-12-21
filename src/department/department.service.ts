@@ -1,18 +1,33 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadGatewayException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Department } from './schema/department.schema';
 import { memberRemovedFields } from 'src/utils/removed_field';
+import { Member } from 'src/members/schema/members.schema';
 
 @Injectable()
 export class DepartmentService {
   constructor(
     @InjectModel('Department') private departmentModel: Model<Department>,
+    @InjectModel('Member') private memberModel: Model<Member>,
   ) {}
   async create(createDepartmentDto: CreateDepartmentDto, user) {
     try {
+      if (createDepartmentDto.departmentHead) {
+        const memberHead = await this.memberModel.findByIdAndUpdate(
+          { _id: createDepartmentDto.departmentHead },
+          { is_departmentHead: true },
+          { new: true },
+        );
+        if (!memberHead)
+          throw new BadGatewayException('Department Head does not exists');
+      }
       const departmentCreated = await this.departmentModel.create({
         createdBy: user._id,
         ...createDepartmentDto,
@@ -30,8 +45,8 @@ export class DepartmentService {
     try {
       const allDeprtments = await this.departmentModel
         .find()
-        .populate('department_head', memberRemovedFields)
-        .populate('createdBy', memberRemovedFields);
+        .populate('createdBy', memberRemovedFields)
+        .populate('departmentHead');
       return allDeprtments;
     } catch (error) {
       throw new InternalServerErrorException(
@@ -40,11 +55,14 @@ export class DepartmentService {
     }
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     try {
-      const department = await this.departmentModel.findOne({
-        id: id,
-      });
+      const department = await this.departmentModel
+        .findOne({
+          _id: id,
+        })
+        .populate('departmentHead', memberRemovedFields)
+        .populate('createdBy', memberRemovedFields);
       return department;
     } catch (error) {
       throw new InternalServerErrorException(
@@ -53,17 +71,51 @@ export class DepartmentService {
     }
   }
 
-  update(id: number, updateDepartmentDto: UpdateDepartmentDto) {
-    return `This action updates a #${id} department`;
+  async update(id: string, updateDepartmentDto: UpdateDepartmentDto) {
+    try{
+      const previousData = await this.departmentModel.findById({_id:id})
+      const newHeadId = new mongoose.Types.ObjectId(
+        updateDepartmentDto.departmentHead,
+      );
+      if (previousData.departmentHead !== newHeadId) {
+        await this.memberModel.findByIdAndUpdate(
+          { _id: previousData.departmentHead },
+          { $set: { is_departmentHead: false } },
+          { new: true },
+        );
+        await this.memberModel.findByIdAndUpdate(
+          { _id: updateDepartmentDto.departmentHead },
+          { $set: { is_departmentHead: true } },
+          { new: true },
+        );
+      }
+    const updatedData = await this.departmentModel.findByIdAndUpdate(
+      id,
+      { $set: updateDepartmentDto },
+      { new: true },
+    );
+
+    if(!updatedData){
+      throw new InternalServerErrorException('error updating department')
+    }
+    return updatedData;
+  }catch(error){
+    throw new error
+    }
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     try {
-      const department = await this.departmentModel.findByIdAndDelete({
-        id:id
+      const department = await this.departmentModel.findOneAndDelete({
+        _id: id,
       });
+      await this.memberModel.findByIdAndUpdate(
+        { _id: department.departmentHead },
+        { $set: { is_departmentHead: false } },
+        { new: true },
+      );
 
-      return {message: `Department ${department.name} deleted`};
+      return { message: `Department ${department.name} deleted` };
     } catch (error) {
       throw new InternalServerErrorException(
         `Error occured while deleting department ${error.message}`,

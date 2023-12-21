@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { type } from 'os';
 import { Department } from 'src/department/schema/department.schema';
 import { Teams } from 'src/teams/schema/teams.schema';
 
@@ -27,13 +28,19 @@ export class Member {
   password: string;
 
   @Prop()
+  contactNumber: string;
+
+  @Prop()
   role: Role;
 
-  @Prop({ type: Types.ObjectId, ref: 'Department' })
+  //@TODO Add 2 contact number fields
+
+  @Prop({ type: Types.ObjectId, ref: 'Department', default: null })
   department: Department; /// add reference to department schema. update dto
 
-  @Prop({ type: Types.ObjectId, ref: 'Teams' })
-  teams: Teams; /// add reference to TEAMS  schema array. update dto
+  // @ TODO make it array of teams
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Teams', default: null }] })
+  teams: Teams[]; /// add reference to TEAMS  schema array. update dto
 
   @Prop({ default: false })
   is_departmentHead: boolean;
@@ -41,11 +48,20 @@ export class Member {
   @Prop({ default: false })
   is_teamHead: boolean;
 
-  @Prop({ default: Date.now })
-  createdAt: Date;
+  @Prop()
+  emergencyContactName: string;
+
+  @Prop()
+  emergencyContactNumber: string;
+
+  @Prop()
+  emergencyContactRelation: string;
 
   @Prop({ type: Types.ObjectId, ref: 'Member' })
   createdBy: Member;
+
+  @Prop({ default: Date.now })
+  createdAt: Date;
 }
 
 export const MemberSchema = SchemaFactory.createForClass(Member);

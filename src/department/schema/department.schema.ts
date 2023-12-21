@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 import { Member } from 'src/members/schema/members.schema';
 
 export type DepartmentDocument = HydratedDocument<Department>;
@@ -9,8 +9,8 @@ export class Department {
   @Prop()
   name: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'Member' })
-  department_head: Member;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Member' })
+  departmentHead: mongoose.Types.ObjectId;
 
   @Prop({ default: Date.now })
   createdAt: Date;

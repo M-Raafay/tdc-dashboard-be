@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 import { Department } from 'src/department/schema/department.schema';
 import { Member } from 'src/members/schema/members.schema';
 import { Project } from 'src/projects/schema/projects.schema';
@@ -18,7 +18,7 @@ export class Teams {
   department: Department;
 
   @Prop({ type: Types.ObjectId, ref: 'Member' })
-  team_head: Member;
+  team_head: mongoose.Types.ObjectId;
 
   //@TODO memebers array
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Member' }] })

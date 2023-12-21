@@ -1,4 +1,33 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateTeamDto } from './create-team.dto';
+import {
+  IsArray,
+  IsMongoId,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
-export class UpdateTeamDto extends PartialType(CreateTeamDto) {}
+export class UpdateTeamDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  technology: string;
+
+  @IsMongoId()
+  department: string;
+
+  @IsMongoId()
+  team_head: string;
+
+  @IsArray()
+  @IsMongoId({ each: true })
+  members: string[];
+
+  @IsArray()
+  @IsMongoId({ each: true })
+  @IsOptional()
+  projects: string[];
+}
+

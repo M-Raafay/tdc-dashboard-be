@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, Types } from 'mongoose';
 import { Member } from 'src/members/schema/members.schema';
+import { Teams } from 'src/teams/schema/teams.schema';
 
 export type ProjectDocument = HydratedDocument<Project>;
 
@@ -30,8 +31,8 @@ export class Project {
   @Prop()
   tech_stack: string;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Member' }] })
-  team_lead: Member[];
+  @Prop({ type: Types.ObjectId, ref: 'Member' })
+  team_lead: Member;
 
   @Prop({ type: Types.ObjectId, ref: 'Member' })
   sales_coordinator: Member;
@@ -39,6 +40,9 @@ export class Project {
   //@REMOVE
   // @Prop({ type: [{ type: Types.ObjectId, ref: 'Member' }] })
   // resource_assigned: Array<Member>;
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Teams' }] })
+  teams_assigned: Array<Teams>;
 
   @Prop()
   platform: string;
@@ -68,8 +72,9 @@ export class Project {
   @Prop()
   end_date: Date;
 
+  //@TODO Consider cost in number and unit as well
   @Prop()
-  cost: string;
+  cost: string; 
 
   @Prop({ default: '0' })
   hourly_cost: string;

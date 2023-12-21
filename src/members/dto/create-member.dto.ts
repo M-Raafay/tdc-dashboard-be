@@ -1,10 +1,12 @@
 import { Transform } from 'class-transformer';
 import {
+  IsArray,
   IsEmail,
   IsEnum,
   IsMongoId,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   MaxLength,
   MinLength,
@@ -22,21 +24,34 @@ export class CreateMemberDto {
   @Transform(({ value }) => value.toLowerCase())
   email: string;
 
+  @IsString()
+  @MinLength(10)
+  @MaxLength(14)
+  contactNumber: string;
+
   @IsEnum(Role)
   role: Role;
 
+  @IsOptional()
   @IsMongoId()
   department: string;
 
-  @IsMongoId()
-  teams: string;
+  @IsArray()
+  @IsMongoId({ each: true })
+  @IsOptional()
+  teams: string[];
 
-  // @IsBoolean()
-  // is_departmentHead: boolean;
+  @IsString()
+  @IsOptional()
+  emergencyContactName: string;
 
-  // @IsBoolean()
-  // is_teamHead: boolean;
+  @IsString()
+  @MinLength(10)
+  @MaxLength(14)
+  @IsOptional()
+  emergencyContactNumber: string;
 
-  // @IsMongoId()
-  // createdBy: string;
+  @IsString()
+  @IsOptional()
+  emergencyContactRelation: string;
 }

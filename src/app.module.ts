@@ -12,6 +12,8 @@ import { ForgetPasswordModule } from './forget_password/forget_password.module';
 import { MailerModule } from './mailer/mailer.module';
 import { DepartmentModule } from './department/department.module';
 import { TeamsModule } from './teams/teams.module';
+import { ClientsModule } from './clients/clients.module';
+import { LeadsModule } from './leads/leads.module';
 
 @Module({
   imports: [
@@ -41,6 +43,8 @@ import { TeamsModule } from './teams/teams.module';
     MailerModule,
     DepartmentModule,
     TeamsModule,
+    ClientsModule,
+    LeadsModule,
   ],
   controllers: [AppController],
   providers: [

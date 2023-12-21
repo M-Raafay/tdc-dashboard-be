@@ -19,7 +19,7 @@ import { MailerService } from 'src/mailer/mailer.service';
 import { ConfigService } from '@nestjs/config';
 import { LogInMemberDto } from './dto/login-member.dto';
 import { JwtService } from '@nestjs/jwt';
-import { memberRemovedFields } from 'src/utils/removed_field';
+import { departmentRemovedFields, memberRemovedFields, teamRemovedFields } from 'src/utils/removed_field';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
@@ -56,7 +56,7 @@ export class MembersService {
       );
       //await this.emailService.sendEmail(createAdminDto.email, template)
 
-      // TODO : REMOVE before deployment. only for testing
+      // TODO : comment before deployment. only for development
       const emailUser = this.configService.get<string>('EMAIL_USER_tester');
       await this.emailService.sendEmail(emailUser, template);
 
@@ -88,7 +88,12 @@ export class MembersService {
         role: user.role,
       };
       const accesstoken = this.jwtService.sign(payload);
-      return { message: 'Welcome', accesstoken: accesstoken , name: user.name, role: user.role};
+      return {
+        message: 'Welcome',
+        accesstoken: accesstoken,
+        name: user.name,
+        role: user.role,
+      };
     } else {
       throw new BadRequestException('Wrong Credentials');
     }
@@ -126,13 +131,25 @@ export class MembersService {
     }
   }
 
-  // used in auth
+  // used in auth // check and remove not required now
   async findMemberByEmail(email: string) {
     const memberEmail = email.toLowerCase();
     const member = await this.memberModel
-      .findOne({ email: memberEmail })
-      .populate('createdBy', memberRemovedFields)
-      .select(memberRemovedFields);
+      .findOne({ email: memberEmail }, '-password')
+      .populate({
+        path: 'department',
+        select: departmentRemovedFields,
+        populate: { path: 'departmentHead', select: memberRemovedFields },
+      })
+      .populate({
+        path: 'teams',
+        select: teamRemovedFields,
+        populate: { path: 'team_head', select: memberRemovedFields },
+      })
+      .populate({
+        path: 'createdBy',
+        select: memberRemovedFields,
+      });
     return member;
   }
 
@@ -201,42 +218,48 @@ export class MembersService {
 
   //@ TODO remeove fields from data and populate
   async findAll() {
-    // const user = req.user;
-    // const { role } = req.user; // use this to achieve user.role add try catch
-
-    // if (role === 'admin' || role === 'super') {
-    //   return await this.memberModel.find({}, '-password').populate('projects');
-    // } else {
-    //   return await this.memberModel.find({}, '-password').populate('projects', {
-    //     coordinator: 0,
-    //     platform: 0,
-    //     client: 0,
-    //     consultant: 0,
-    //     cost: 0,
-    //     start_date: 0,
-    //     end_date: 0,
-    //     createdAt: 0,
-    //   }); // adjust fields
-    // }
-    return await this.memberModel.find().populate('createdBy');
+    return await this.memberModel
+      .find({}, '-password')
+      .populate({
+        path: 'department',
+        select: departmentRemovedFields,
+        populate: { path: 'departmentHead', select: memberRemovedFields },
+      })
+      .populate({
+        path: 'teams',
+        select: teamRemovedFields,
+        populate: { path: 'team_head', select: memberRemovedFields },
+      })
+      .populate({
+        path: 'createdBy',
+        select: memberRemovedFields,
+      });
   }
 
   async findMemberById(id: string) {
     try {
-      const memberData = await this.memberModel.findById(
-        { _id: id },
-        '-password',
-      );
+      const memberData = await this.memberModel
+        .findById({ _id: id }, '-password')
+        .populate({
+          path: 'department',
+          select: departmentRemovedFields,
+          populate: { path: 'departmentHead', select: memberRemovedFields },
+        })
+        .populate({
+          path: 'teams',
+          select: teamRemovedFields,
+          populate: { path: 'team_head', select: memberRemovedFields },
+        })
+        .populate({
+          path: 'createdBy',
+          select: memberRemovedFields,
+        });
       if (!memberData) {
         throw new NotFoundException('Member not found');
       }
       return memberData;
     } catch (error) {
-      throw new HttpException(
-        'Failed to create member',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        error.message,
-      );
+      throw new HttpException(error.message, error.statusCode);
     }
   }
 
@@ -250,24 +273,14 @@ export class MembersService {
     }
 
     try {
-      //const data =await this.memberModel.findByIdAndUpdate(id, {$set : updateData,$push : {projects}} ,{new:true})
       const data = await this.memberModel.findByIdAndUpdate(
         id,
-        { $set: updateMemberDto },
+        { ...updateMemberDto },
         { new: true },
       );
       const receivedData = data.toObject();
 
       const { password, ...restdata } = receivedData;
-      //    console.log(password,'#####', restdata);
-
-      // if(data===null){
-      //   console.log('dcs');
-
-      //   throw new HttpException('Member not found OR doesnot exists : Wrong ID', HttpStatus.NOT_FOUND);
-      // }
-
-      // console.log(data);
       return restdata;
     } catch (error) {
       throw new HttpException(
@@ -287,12 +300,7 @@ export class MembersService {
       }
       return { message: 'Member Deleted ' };
     } catch (error) {
-      throw new HttpException(error.message, error.statusCode)
-      // throw new HttpException(
-      //   'Failed to delete',
-      //   HttpStatus.INTERNAL_SERVER_ERROR,
-      //   error.message,
-      // );
+      throw new HttpException(error.message, error.statusCode);
     }
   }
 }

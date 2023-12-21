@@ -36,13 +36,6 @@ export class RolesGuard implements CanActivate {
   {
     return err.message
   }
-    // const user = {
-    //     _id: "64d4cae1add19d6b97a3adb0",
-    //     name: "ali",
-    //     role: "super_admin"
-    // }
-  //  console.log(user);
     
-  //  return requiredRoles.some((role) => user.role?.includes(role));
   }
 }
