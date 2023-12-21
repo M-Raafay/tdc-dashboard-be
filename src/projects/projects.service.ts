@@ -19,10 +19,10 @@ export class ProjectsService {
 
   async create(createProjectDto: CreateProjectDto) {
     const data = await this.projectModel.create({ ...createProjectDto });
-    const techLead = await this.memberService.findMemberById(createProjectDto.team_lead)
-    console.log(techLead);
-    if(!techLead)
-      throw new NotFoundException('Tech_Lead not found')
+    // const techLead = await this.memberService.findMemberById(createProjectDto.team_lead)
+    // console.log(techLead);
+    // if(!techLead)
+    //   throw new NotFoundException('Tech_Lead not found')
     
 
     return data;
@@ -33,7 +33,7 @@ export class ProjectsService {
       .find({})
       .populate('team_lead', memberRemovedFields)
       .populate('sales_coordinator', salesMemberRemovedFields)
-      .populate('resource_assigned', memberRemovedFields)
+      .populate('teams_assigned', memberRemovedFields)
       .exec();
     return data;
   }
@@ -41,19 +41,26 @@ export class ProjectsService {
   async findOne(id: string) {
     const data = await this.projectModel
       .findById(id)
-      .populate('resource_assigned');
+      .populate('team_lead', memberRemovedFields)
+      .populate('sales_coordinator', salesMemberRemovedFields)
+      .populate('teams_assigned', memberRemovedFields)
+      .exec();
     if (!data) {
-      throw new HttpException('not found', 404);
+      throw new NotFoundException('project not found');
     }
-    return [data];
+    return data;
   }
 
+  //@Todo Update Dto to independent
   async update(id: string, updateProjectDto: UpdateProjectDto) {
     const data = await this.projectModel.findByIdAndUpdate(
       id,
       { ...updateProjectDto },
       { new: true },
     );
+    if(!data){
+      throw new NotFoundException('Project not found')
+    }
     return data;
   }
 

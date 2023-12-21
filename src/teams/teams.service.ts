@@ -63,7 +63,7 @@ export class TeamsService {
 
   async findOne(id: string) {
     try {
-      const department = await this.teamsModel
+      const team = await this.teamsModel
         .findOne({
           _id: id,
         })
@@ -77,11 +77,12 @@ export class TeamsService {
         .populate('team_head', memberRemovedFields)
         .populate('members', memberRemovedFields)
         .populate('projects');
-      return department;
+      if(!team){
+        throw new NotFoundException('Team not found')
+      }
+      return team;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error occured while fetching teams ${error.message}`,
-      );
+      throw error
     }
   }
 
@@ -129,7 +130,7 @@ export class TeamsService {
       }
       return updatedTeam;
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+      throw error
     }
   }
 
@@ -154,7 +155,7 @@ export class TeamsService {
 
       return { message: `Team ${deletedTeam.name} deleted` };
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+      throw error
     }
   }
 }

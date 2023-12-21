@@ -27,7 +27,7 @@ export class CreateProjectDto {
   sales_coordinator: string;
 
   @IsMongoId({ each: true })
-  resource_assigned: string[];
+  teams_assigned: string[];
 
   @IsString()
   @IsNotEmpty()
@@ -38,6 +38,7 @@ export class CreateProjectDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsMongoId()
   client: string;
 
   @IsString()
@@ -47,9 +48,8 @@ export class CreateProjectDto {
   @IsEnum(Status)
   status: Status;
 
-  @IsString()
   @IsNotEmpty()
-  duration: string;
+  duration: number;
 
   @IsString()
   @IsNotEmpty()

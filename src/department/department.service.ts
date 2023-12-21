@@ -2,6 +2,7 @@ import {
   BadGatewayException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
@@ -10,6 +11,7 @@ import mongoose, { Model } from 'mongoose';
 import { Department } from './schema/department.schema';
 import { memberRemovedFields } from 'src/utils/removed_field';
 import { Member } from 'src/members/schema/members.schema';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class DepartmentService {
@@ -63,11 +65,12 @@ export class DepartmentService {
         })
         .populate('departmentHead', memberRemovedFields)
         .populate('createdBy', memberRemovedFields);
+      if(!department){
+        throw new NotFoundException('Department not found')
+      }
       return department;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error occured while fetching department ${error.message}`,
-      );
+      throw error
     }
   }
 
@@ -104,6 +107,7 @@ export class DepartmentService {
     }
   }
 
+  //@Todo throwing error when seting department head to false. due to attribute key change
   async remove(id: string) {
     try {
       const department = await this.departmentModel.findOneAndDelete({

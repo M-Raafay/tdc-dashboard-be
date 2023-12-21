@@ -1,8 +1,10 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateDepartmentDto } from './create-department.dto';
-import { IsMongoId } from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 
 export class UpdateDepartmentDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
   @IsMongoId()
   departmentHead: string;
 }

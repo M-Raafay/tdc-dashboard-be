@@ -290,6 +290,7 @@ export class MembersService {
     }
   }
 
+  //@Todo If member is removed, check if he is head and remove from there,  check if he is part of team and remove from there as well
   async remove(id: string) {
     try {
       const member = await this.memberModel.findByIdAndDelete({ _id: id });
