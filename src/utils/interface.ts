@@ -1,9 +1,11 @@
+import mongoose from "mongoose";
+
 export interface jwtUser  {
-    sub:string
+    _id:string
     role:string
 }
 
 export interface User {
-  _id: string;
+  _id: mongoose.Types.ObjectId;
   role: string;
 }

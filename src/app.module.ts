@@ -14,6 +14,7 @@ import { DepartmentModule } from './department/department.module';
 import { TeamsModule } from './teams/teams.module';
 import { ClientsModule } from './clients/clients.module';
 import { LeadsModule } from './leads/leads.module';
+import { TaskModule } from './task/task.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { LeadsModule } from './leads/leads.module';
     TeamsModule,
     ClientsModule,
     LeadsModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [

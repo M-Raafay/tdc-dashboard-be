@@ -8,7 +8,7 @@ import { UpdateTeamDto } from './dto/update-team.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { Teams } from './schema/teams.schema';
-import { memberRemovedFields } from 'src/utils/removed_field';
+import { memberRemovedFields, memberSelectFields } from 'src/utils/removed_field';
 import { Member } from 'src/members/schema/members.schema';
 
 @Injectable()
@@ -18,9 +18,12 @@ export class TeamsService {
     @InjectModel('Member') private memberModel: Model<Member>,
   ) {}
 
-  async create(createTeamDto: CreateTeamDto, user) {
+  async create(createTeamDto: CreateTeamDto, member) {
+    const createdByData = await this.memberModel
+      .findById(member._id)
+      .select(memberSelectFields);
     const teamCreated = await this.teamsModel.create({
-      createdBy: user._id,
+      createdBy: createdByData,
       ...createTeamDto,
     });
     //update team_head in members model and set is_teamHead to true

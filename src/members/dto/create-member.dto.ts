@@ -46,8 +46,6 @@ export class CreateMemberDto {
   emergencyContactName: string;
 
   @IsString()
-  @MinLength(10)
-  @MaxLength(14)
   @IsOptional()
   emergencyContactNumber: string;
 

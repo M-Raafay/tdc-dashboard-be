@@ -12,14 +12,14 @@ import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { Member } from './schema/members.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { emailAccountCreation, generateRandomPassword } from 'src/utils/utils';
 import { MailerService } from 'src/mailer/mailer.service';
 import { ConfigService } from '@nestjs/config';
 import { LogInMemberDto } from './dto/login-member.dto';
 import { JwtService } from '@nestjs/jwt';
-import { departmentRemovedFields, memberRemovedFields, teamRemovedFields } from 'src/utils/removed_field';
+import { departmentRemovedFields, memberRemovedFields, memberSelectFields, teamRemovedFields } from 'src/utils/removed_field';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
@@ -34,6 +34,8 @@ export class MembersService {
   // new create member with password sent in mail
   // @ TODO check if the department and team exists in their respective tables??
   async createMember(createMemberDto: CreateMemberDto, user) {
+    const createdByData = await this.memberModel.findById(user._id)
+        .select(memberSelectFields);
     const randomPassword = generateRandomPassword(10);
 
     const hashedPassword = await bcrypt.hash(randomPassword, 10);
@@ -44,7 +46,7 @@ export class MembersService {
     try {
       const userCreated = await this.memberModel.create({
         password: hashedPassword,
-        createdBy: user._id,
+        createdBy: createdByData,
         ...createMemberDto,
       });
       const receivedData = userCreated.toObject();
@@ -83,7 +85,7 @@ export class MembersService {
 
     if (await bcrypt.compare(logInMemberDto.password, user.password)) {
       const payload = {
-        sub: user._id,
+        _id: user._id,
         //email: user.email,
         role: user.role,
       };
@@ -131,7 +133,7 @@ export class MembersService {
     }
   }
 
-  // used in auth // check and remove not required now
+  // used in auth  and forgot password // remove
   async findMemberByEmail(email: string) {
     const memberEmail = email.toLowerCase();
     const member = await this.memberModel
@@ -197,24 +199,25 @@ export class MembersService {
   //   }
   // }
 
-  async findByIdAndUpdatePassword(id: string, new_password: string) {
-    const data = await this.memberModel.findById(id);
-    console.log(data);
-    if (!data) {
-      throw new NotFoundException('admin not found');
-    }
+  // @ Remove
+  // async findByIdAndUpdatePassword(id: string, new_password: string) {
+  //   const data = await this.memberModel.findById(id);
+  //   console.log(data);
+  //   if (!data) {
+  //     throw new NotFoundException('admin not found');
+  //   }
 
-    const updatePassword = await this.memberModel.findByIdAndUpdate(
-      { _id: id },
-      { password: new_password },
-      { new: true },
-    );
-    if (!updatePassword) {
-      throw new NotFoundException('admin not found : password not updated');
-    }
+  //   const updatePassword = await this.memberModel.findByIdAndUpdate(
+  //     { _id: id },
+  //     { password: new_password },
+  //     { new: true },
+  //   );
+  //   if (!updatePassword) {
+  //     throw new NotFoundException('admin not found : password not updated');
+  //   }
 
-    return updatePassword;
-  }
+  //   return updatePassword;
+  // }
 
   //@ TODO remeove fields from data and populate
   async findAll() {
@@ -230,16 +233,18 @@ export class MembersService {
         select: teamRemovedFields,
         populate: { path: 'team_head', select: memberRemovedFields },
       })
-      .populate({
-        path: 'createdBy',
-        select: memberRemovedFields,
-      });
+      // .populate({
+      //   path: 'createdBy',
+      //   select: memberRemovedFields,
+      // });
   }
 
+  // @TODO good exception handling here
   async findMemberById(id: string) {
     try {
+      const objectId = new mongoose.Types.ObjectId(id);
       const memberData = await this.memberModel
-        .findById({ _id: id }, '-password')
+        .findById({ _id: objectId }, '-password')
         .populate({
           path: 'department',
           select: departmentRemovedFields,
@@ -250,10 +255,10 @@ export class MembersService {
           select: teamRemovedFields,
           populate: { path: 'team_head', select: memberRemovedFields },
         })
-        .populate({
-          path: 'createdBy',
-          select: memberRemovedFields,
-        });
+        // .populate({
+        //   path: 'createdBy',
+        //   select: memberRemovedFields,
+        // });
       if (!memberData) {
         throw new NotFoundException('Member not found');
       }

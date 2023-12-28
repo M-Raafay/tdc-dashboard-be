@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 import { type } from 'os';
 import { Department } from 'src/department/schema/department.schema';
 import { Teams } from 'src/teams/schema/teams.schema';
@@ -18,6 +18,9 @@ export enum Role {
 
 @Schema()
 export class Member {
+  @Prop({ type: mongoose.Schema.Types.ObjectId, auto: true })
+  _id: mongoose.Types.ObjectId;
+
   @Prop()
   name: string;
 
@@ -56,8 +59,11 @@ export class Member {
 
   @Prop()
   emergencyContactRelation: string;
+  //@Remove
+  // @Prop({ type: Types.ObjectId, ref: 'Member' })
+  // createdBy: Member;
 
-  @Prop({ type: Types.ObjectId, ref: 'Member' })
+  @Prop({ type: mongoose.Schema.Types.Mixed })
   createdBy: Member;
 
   @Prop({ default: Date.now })

@@ -1,147 +1,104 @@
-import { Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ResetPasswordDto } from './dto/reset_password.dto';
-//import { AdminService } from 'src/admin/admin.service';
 import { MembersService } from 'src/members/members.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from 'src/mailer/mailer.service';
 import * as bcrypt from 'bcrypt';
+import { InjectModel } from '@nestjs/mongoose';
+import { Member } from 'src/members/schema/members.schema';
+import { Model } from 'mongoose';
+import { User } from 'src/utils/interface';
 
 @Injectable()
 export class ForgetPasswordService {
-
-  constructor  (
-   // private adminService : AdminService ,
+  constructor(
+    @InjectModel('Member') private memberModel: Model<Member>,
     private memberService: MembersService,
     private jwtService: JwtService,
     private readonly emailService: MailerService,
-    private readonly configService: ConfigService
-    ){}
+    private configService: ConfigService,
+  ) {}
 
-  async checkMail(email:string) {
+  async checkMail(email: string) {
+    const memberData = await this.memberModel.findOne({ email: email });
 
-    //const adminData = await this.adminService.findAdminByMail(email)
-    const memberData = await this.memberService.findMemberByEmail(email)
-    
-    if(!memberData 
-      //&& !adminData
-      ){
-      throw new NotFoundException('wrong email: user doesnot exists')
+    if (!memberData) {
+      throw new NotFoundException('wrong email: user doesnot exists');
+    } else {
+      const res = this.createTokenAndMail(memberData);
+      return res;
     }
-    // else if(adminData){
-
-    //   const res = this.createTokenAndMail(adminData)
-    //   return res
-
-    // }
-    else if(memberData){
-      const res = this.createTokenAndMail(memberData)
-      return res
-
-    }
-
-
-    return null;
-  }
- 
-  async createTokenAndMail(data){
-    const {_id , email,role} = data
-    const payload = {_id, email,role}
-    
-    const jwtToken = this.jwtService.sign(payload)
-
-    const link = `http://localhost:3000/newpassword?id=${_id}&token=${jwtToken}`
-
-    const emailBody = `<p>Click this URL to reset password:</p>
-                       <a href="${link}">${link}</a>`;
-     await this.emailService.sendEmail(email, emailBody)
-
-    return {message:'Check your email'}
   }
 
+  async createTokenAndMail(data: Member) {
+    try {
+      const { _id, email, role } = data;
+      const payload = { _id };
 
+      const jwtToken = this.jwtService.sign(payload);
+      const feLink = this.configService.get('FORGOT_PASSWORD_FE_LINK');
+      const link = `${feLink}?token=${jwtToken}`;
+      const emailBody = `<p>Click the button below to reset your password:</p>
+                     <a href="${link}" style="text-decoration: none;">
+                       <button style="padding: 10px; background-color: #3498db; color: white; border: none; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; cursor: pointer; transition: background-color 0.3s;">
+                         Reset Password
+                       </button>
+                     </a>`;
 
-  async resetForgotPassword(id : string,token:string,resetPasswordDTo:ResetPasswordDto){
+      await this.emailService.sendEmail(email, emailBody);
 
-
-    // check if id and token are being sent in request
-
-    try{
-    const verifiedToken = this.jwtService.verify(token)
-   }catch(error){
-    throw new NotAcceptableException('Token verification failed', error.message)
-    
-   }
-
-   const {new_password, confirm_password} = resetPasswordDTo
-
-   if(new_password !== confirm_password){
-    throw new NotAcceptableException('passwords donot match')
-   }
-    const hashedPassword = await bcrypt.hash(new_password,10)
-    
-
-    const decodedToken = this.jwtService.decode(token)
-
-
-
-   if(decodedToken['_id'] !== id){
-    throw new NotAcceptableException('user is not verified')
-   } 
-    if(decodedToken['role']==='ADMIN'|| decodedToken['role']==='SUPERADMIN'){
-      // const adminData = this.adminService.findByIdAndUpdatePassword(decodedToken['_id'], hashedPassword)
-      // if(!adminData){
-      //   throw new NotAcceptableException('failed to update password')
-      // }
-       return {message : "Password updated successfully" }
+      return { message: 'Check your email' };
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
-    
-    if(decodedToken['role']==='user'){
-      const memberData = this.memberService.findByIdAndUpdatePassword(decodedToken['_id'], hashedPassword)
-      if(!memberData){
-        throw new NotAcceptableException('failed to update password')
+  }
+
+  async verifyToken(token: string) {
+    try {
+      const verifiedToken = this.jwtService.verify(token);
+      if (!verifiedToken) {
+        throw new NotAcceptableException('Token verification failed');
       }
-       return {message : "Password updated successfully" }
+      const memberData = await this.memberModel.findOne({
+        _id: verifiedToken._id,
+      });
+
+      if (!memberData) {
+        throw new NotFoundException('User doesnot exists');
+      }
+
+      return { bearertoken: token };
+    } catch (error) {
+      throw new NotAcceptableException(error.message);
     }
+  }
 
-    return null;
+  async resetForgotPassword(resetPasswordDTo: ResetPasswordDto, user: User) {
+    try {
+      const { new_password, confirm_password } = resetPasswordDTo;
 
+      if (new_password !== confirm_password) {
+        throw new NotAcceptableException('passwords donot match');
+      }
+      const hashedPassword = await bcrypt.hash(new_password, 10);
     
+      const memberData = await this.memberModel.findByIdAndUpdate(
+        { _id: user._id },
+        { password: hashedPassword },
+      );
+      if (!memberData) {
+        throw new NotAcceptableException('failed to update password');
+      }
+
+      return { message: 'Password updated successfully' };
+    } catch (error) {
+      throw new NotAcceptableException(error.message);
+    }
   }
-
-
-  verifyToken(id:string, token:string){
-    try{
-      const verifiedToken = this.jwtService.verify(token)
-     }catch(error){
-      throw new NotAcceptableException('Token verification failed', error.message)
-     }
-
-     const decodedToken = this.jwtService.decode(token)
-
-     if(decodedToken['_id'] !== id){
-      return {message : 'User Not Verified'}
-     }else {
-      return {message : 'User Verified'}
-     }
-
-  }
-
-  
-
-  // findAll() {
-  //   return `This action returns all forgetPassword`;
-  // }
-
-  // findOne(id: number) {
-  //   return `This action returns a #${id} forgetPassword`;
-  // }
-
-  // update(id: number, updateForgetPasswordDto: UpdateForgetPasswordDto) {
-  //   return `This action updates a #${id} forgetPassword`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} forgetPassword`;
-  // }
 }

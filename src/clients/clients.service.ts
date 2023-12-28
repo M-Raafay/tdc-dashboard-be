@@ -1,25 +1,33 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Client } from './schema/client.schema';
 import { Model } from 'mongoose';
 import { User } from 'src/utils/interface';
+import { memberSelectFields } from 'src/utils/removed_field';
+import { Member } from 'src/members/schema/members.schema';
 
 @Injectable()
 export class ClientsService {
-  constructor(@InjectModel('Client') private clientModel: Model<Client>) {}
+  constructor(
+    @InjectModel('Client') private clientModel: Model<Client>,
+    @InjectModel('Member') private memberModel: Model<Member>,
+  ) {}
 
   async create(createClientDto: CreateClientDto, member: User) {
     try {
+      const createdByData = await this.memberModel
+        .findById(member._id)
+        .select(memberSelectFields);
       const clientCreate = await this.clientModel.create({
         ...createClientDto,
-        createdBy: member._id,
+        createdBy: createdByData,
       });
 
       return clientCreate;
     } catch (error) {
-      throw new error();
+      throw new InternalServerErrorException(`${error.message}`);
     }
   }
 
@@ -28,7 +36,7 @@ export class ClientsService {
   }
 
   async findOne(id: string) {
-    return await this.clientModel.findById({_id : id});
+    return await this.clientModel.findById({ _id: id });
   }
 
   async update(id: string, updateClientDto: UpdateClientDto) {
@@ -41,12 +49,12 @@ export class ClientsService {
   }
 
   async remove(id: string) {
-     const client = await this.clientModel.findByIdAndDelete({ _id: id });
-     if (!client) {
-       throw new NotFoundException(
-         'Client not found OR doesnot exists : Wrong ID',
-       );
-     }
-     return { message: 'Member Deleted ' };
+    const client = await this.clientModel.findByIdAndDelete({ _id: id });
+    if (!client) {
+      throw new NotFoundException(
+        'Client not found OR doesnot exists : Wrong ID',
+      );
+    }
+    return { message: 'Member Deleted ' };
   }
 }

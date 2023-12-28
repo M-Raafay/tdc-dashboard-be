@@ -15,6 +15,7 @@ import { GetUser } from 'src/auth/getuser.decorator';
 import { Member, Role } from 'src/members/schema/members.schema';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/roles/role.decorator';
+import { User } from 'src/utils/interface';
 
 @UseGuards(JwtAuthGuard)
 @Roles(Role.SUPERADMIN, Role.ADMIN, Role.HR)
@@ -25,7 +26,7 @@ export class DepartmentController {
   @Post('create')
   create(
     @Body() createDepartmentDto: CreateDepartmentDto,
-    @GetUser() user: Member,
+    @GetUser() user: User,
   ) {
     return this.departmentService.create(createDepartmentDto, user);
   }

@@ -13,7 +13,9 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/roles/role.decorator';
-import { Role } from 'src/members/schema/members.schema';
+import { Member, Role } from 'src/members/schema/members.schema';
+import { GetUser } from 'src/auth/getuser.decorator';
+import { User } from 'src/utils/interface';
 
 @UseGuards(JwtAuthGuard)
 @Roles(Role.BUSINESS_MANAGER, Role.SUPERADMIN)
@@ -22,8 +24,8 @@ export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Post('create')
-  create(@Body() createProjectDto: CreateProjectDto) {
-    return this.projectsService.create(createProjectDto);
+  create(@Body() createProjectDto: CreateProjectDto, @GetUser() member:User) {
+    return this.projectsService.create(createProjectDto, member);
   }
 
   @Get()

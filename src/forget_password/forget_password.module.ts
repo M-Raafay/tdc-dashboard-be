@@ -4,19 +4,20 @@ import { ForgetPasswordController } from './forget_password.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MembersModule } from 'src/members/members.module';
-//import { AdminModule } from 'src/admin/admin.module';
 import { MailerModule } from 'src/mailer/mailer.module';
+import { MemberSchema } from 'src/members/schema/members.schema';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
-    MembersModule,
-    //AdminModule,
+    MembersModule, //@remove
+    MongooseModule.forFeature([{ name: 'Member', schema: MemberSchema }]),
     MailerModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('SECRET'),
-        signOptions: { expiresIn: '15m' },
+        signOptions: { expiresIn: configService.get<string>('FORGOT_PASSWORD_JWT_EXPIRY') },
       }),
       inject: [ConfigService],
     }),

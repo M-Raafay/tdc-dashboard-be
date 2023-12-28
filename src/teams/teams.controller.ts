@@ -6,6 +6,7 @@ import { GetUser } from 'src/auth/getuser.decorator';
 import { Member, Role } from 'src/members/schema/members.schema';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/roles/role.decorator';
+import { User } from 'src/utils/interface';
 
 @UseGuards(JwtAuthGuard)
 @Roles(Role.SUPERADMIN, Role.HR)
@@ -14,7 +15,7 @@ export class TeamsController {
   constructor(private readonly teamsService: TeamsService) {}
 
   @Post('create')
-  create(@Body() createTeamDto: CreateTeamDto, @GetUser() user: Member) {
+  create(@Body() createTeamDto: CreateTeamDto, @GetUser() user: User) {
     return this.teamsService.create(createTeamDto, user);
   }
 

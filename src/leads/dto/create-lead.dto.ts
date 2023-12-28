@@ -1,5 +1,6 @@
 import {
   IsDateString,
+  IsEnum,
   IsMongoId,
   IsNotEmpty,
   IsOptional,
@@ -7,6 +8,7 @@ import {
   IsUrl,
   MinLength,
 } from 'class-validator';
+import { LeadType } from '../schema/leads.schema';
 
 export class CreateLeadDto {
   @IsString()
@@ -16,6 +18,9 @@ export class CreateLeadDto {
 
   @IsDateString()
   date: Date;
+
+  @IsMongoId()
+  salesTeamMember: string;
 
   @IsMongoId()
   @IsOptional()
@@ -31,8 +36,13 @@ export class CreateLeadDto {
   sentDescription: string;
 
   @IsDateString()
+  @IsOptional()
   appointment: Date;
 
   @IsDateString()
+  @IsOptional()
   call: Date;
+
+  @IsEnum(LeadType)
+  leadStatus: LeadType;
 }

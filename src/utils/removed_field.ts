@@ -4,7 +4,14 @@ export const memberRemovedFields = {
   createdAt: 0,
   __v:0
 };
+export const memberSelectFields = {
+  name: 1,
+  email: 1,
+  contactNumber: 1,
+};
 
+export const memberSelectFieldss  = 'name email contactNumber'
+  
 export const departmentRemovedFields = {
   createdAt: 0,
   __v: 0,

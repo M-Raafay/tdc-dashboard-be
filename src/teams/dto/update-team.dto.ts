@@ -23,6 +23,7 @@ export class UpdateTeamDto {
 
   @IsArray()
   @IsMongoId({ each: true })
+  @IsOptional()
   members: string[];
 
   @IsArray()

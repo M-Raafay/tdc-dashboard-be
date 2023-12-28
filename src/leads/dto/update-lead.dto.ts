@@ -1,6 +1,7 @@
 import {
   IsBoolean,
   IsDate,
+  IsEnum,
   IsMongoId,
   IsNotEmpty,
   IsOptional,
@@ -8,6 +9,7 @@ import {
   IsUrl,
   MinLength,
 } from 'class-validator';
+import { LeadType } from '../schema/leads.schema';
 
 export class UpdateLeadDto {
   @IsString()
@@ -35,20 +37,14 @@ export class UpdateLeadDto {
   sentDescription: string;
 
   @IsDate()
+  @IsOptional()
   appointment: Date;
 
   @IsDate()
+  @IsOptional()
   call: Date;
 
-  @IsBoolean()
+  @IsEnum(LeadType)
   @IsOptional()
-  isColdLead: boolean;
-
-  @IsBoolean()
-  @IsOptional()
-  isWarmLead: boolean;
-
-  @IsBoolean()
-  @IsOptional()
-  isHotLead: boolean;
+  leadStatus: LeadType;
 }

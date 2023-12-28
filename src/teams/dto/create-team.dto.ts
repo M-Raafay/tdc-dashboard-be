@@ -10,6 +10,7 @@ export class CreateTeamDto {
   technology: string;
 
   @IsMongoId()
+  @IsOptional()
   department: string;
 
   @IsMongoId()
@@ -17,6 +18,7 @@ export class CreateTeamDto {
 
   @IsArray()
   @IsMongoId({ each: true })
+  @IsOptional()
   members: string[];
 
   @IsArray()

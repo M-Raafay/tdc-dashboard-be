@@ -25,6 +25,9 @@ export enum DurationUnit {
 
 @Schema()
 export class Project {
+  @Prop({ type: mongoose.Schema.Types.ObjectId, auto: true })
+  _id: mongoose.Types.ObjectId;
+
   @Prop()
   name: string;
 
@@ -74,13 +77,16 @@ export class Project {
 
   //@TODO Consider cost in number and unit as well
   @Prop()
-  cost: string; 
+  cost: string;
 
   @Prop({ default: '0' })
   hourly_cost: string;
 
   @Prop({ default: Date.now })
   createdAt: Date;
+
+  @Prop({ type: mongoose.Schema.Types.Mixed })
+  createdBy: Member;
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

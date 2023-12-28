@@ -1,5 +1,6 @@
 import {
   BadGatewayException,
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -9,9 +10,10 @@ import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { Department } from './schema/department.schema';
-import { memberRemovedFields } from 'src/utils/removed_field';
+import { memberRemovedFields, memberSelectFields, memberSelectFieldss } from 'src/utils/removed_field';
 import { Member } from 'src/members/schema/members.schema';
 import { NotFoundError } from 'rxjs';
+import { User } from 'src/utils/interface';
 
 @Injectable()
 export class DepartmentService {
@@ -19,19 +21,22 @@ export class DepartmentService {
     @InjectModel('Department') private departmentModel: Model<Department>,
     @InjectModel('Member') private memberModel: Model<Member>,
   ) {}
-  async create(createDepartmentDto: CreateDepartmentDto, user) {
+  async create(createDepartmentDto: CreateDepartmentDto, user :User) {
     try {
+
+      const createdByData = await this.memberModel.findById(user._id).select(memberSelectFields);
       if (createDepartmentDto.departmentHead) {
         const memberHead = await this.memberModel.findByIdAndUpdate(
           { _id: createDepartmentDto.departmentHead },
           { is_departmentHead: true },
           { new: true },
         );
-        if (!memberHead)
-          throw new BadGatewayException('Department Head does not exists');
+
+        if (!memberHead || !createdByData)
+          throw new BadGatewayException('Member data does not exists');
       }
       const departmentCreated = await this.departmentModel.create({
-        createdBy: user._id,
+        createdBy: createdByData,
         ...createDepartmentDto,
       });
 
@@ -47,8 +52,8 @@ export class DepartmentService {
     try {
       const allDeprtments = await this.departmentModel
         .find()
-        .populate('createdBy', memberRemovedFields)
-        .populate('departmentHead');
+        .populate('createdBy', memberSelectFields)
+        .populate('departmentHead', memberSelectFields);
       return allDeprtments;
     } catch (error) {
       throw new InternalServerErrorException(
@@ -63,7 +68,7 @@ export class DepartmentService {
         .findOne({
           _id: id,
         })
-        .populate('departmentHead', memberRemovedFields)
+        .populate('departmentHead', memberSelectFields)
         .populate('createdBy', memberRemovedFields);
       if(!department){
         throw new NotFoundException('Department not found')
@@ -77,6 +82,9 @@ export class DepartmentService {
   async update(id: string, updateDepartmentDto: UpdateDepartmentDto) {
     try{
       const previousData = await this.departmentModel.findById({_id:id})
+      if(!previousData){
+        throw new BadRequestException('Error in request. Department/Head not found')
+      }
       const newHeadId = new mongoose.Types.ObjectId(
         updateDepartmentDto.departmentHead,
       );
@@ -99,11 +107,13 @@ export class DepartmentService {
     );
 
     if(!updatedData){
-      throw new InternalServerErrorException('error updating department')
+      throw new InternalServerErrorException('Error updating department')
     }
     return updatedData;
   }catch(error){
-    throw new error
+    throw new InternalServerErrorException(
+      `${error.message}`,
+    );
     }
   }
 

@@ -1,12 +1,20 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 import { Client } from 'src/clients/schema/client.schema';
 import { Member } from 'src/members/schema/members.schema';
 
 export type LeadDocument = HydratedDocument<Lead>;
 
+export enum LeadType {
+  HOT = 'HOT',
+  WARM = 'WARM',
+  COLD = 'COLD',
+}
 @Schema()
 export class Lead {
+  @Prop({ type: mongoose.Schema.Types.ObjectId, auto: true })
+  _id: mongoose.Types.ObjectId;
+
   @Prop()
   name: string;
 
@@ -34,17 +42,14 @@ export class Lead {
   @Prop()
   call: Date;
 
-  @Prop({ default: false })
-  isColdLead: boolean;
-
-  @Prop({ default: false })
-  isWarmLead: boolean;
-
-  @Prop({ default: false })
-  isHotLead: boolean;
+  @Prop()
+  leadStatus: LeadType;
 
   @Prop({ default: Date.now })
   createdAt: Date;
+
+  @Prop({ type: mongoose.Schema.Types.Mixed })
+  createdBy: Member;
 }
 
 export const LeadSchema = SchemaFactory.createForClass(Lead);

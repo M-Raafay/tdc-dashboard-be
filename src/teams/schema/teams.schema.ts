@@ -8,6 +8,9 @@ export type TeamsDocument = HydratedDocument<Teams>;
 
 @Schema()
 export class Teams {
+  @Prop({ type: mongoose.Schema.Types.ObjectId, auto: true })
+  _id: mongoose.Types.ObjectId;
+
   @Prop()
   name: string;
 
@@ -31,7 +34,10 @@ export class Teams {
   @Prop({ default: Date.now })
   createdAt: Date;
 
-  @Prop({ type: Types.ObjectId, ref: 'Member' })
+  //@Remove
+  // @Prop({ type: Types.ObjectId, ref: 'Member' })
+  // createdBy: Member;
+  @Prop({ type: mongoose.Schema.Types.Mixed })
   createdBy: Member;
 }
 

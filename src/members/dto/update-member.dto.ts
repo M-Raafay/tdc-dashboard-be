@@ -32,26 +32,24 @@ export class UpdateMemberDto {
   @IsEnum(Role)
   role: Role;
 
-  //   @IsOptional()
+  @IsOptional()
   @IsMongoId()
   department: string;
 
   @IsArray()
   @IsMongoId({ each: true })
-  //   @IsOptional()
+  @IsOptional()
   teams: string[];
 
   @IsString()
-  //   @IsOptional()
+  @IsOptional()
   emergencyContactName: string;
 
   @IsString()
-  @MinLength(10)
-  @MaxLength(14)
-  //   @IsOptional()
+  @IsOptional()
   emergencyContactNumber: string;
 
   @IsString()
-  //   @IsOptional()
+  @IsOptional()
   emergencyContactRelation: string;
 }

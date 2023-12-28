@@ -1,50 +1,44 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ForgetPasswordService } from './forget_password.service';
-import {  ResetPasswordDto } from './dto/reset_password.dto';
+import { ResetPasswordDto } from './dto/reset_password.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { GetUser } from 'src/auth/getuser.decorator';
+import { User } from 'src/utils/interface';
 
 @Controller('forget-password')
 export class ForgetPasswordController {
   constructor(private readonly forgetPasswordService: ForgetPasswordService) {}
 
- @Post()
-  forgetPasswordMail(@Body('email') email:string) {
+  @Post()
+  forgetPasswordMail(@Body('email') email: string) {
     return this.forgetPasswordService.checkMail(email);
   }
 
-
   @Post('verify')
-  tokenVerify(@Query('id') id: string,
-  @Query('token') token: string){
-
-    return this.forgetPasswordService.verifyToken(id,token)
+  tokenVerify(@Query('token') token: string) {
+    return this.forgetPasswordService.verifyToken(token);
   }
 
-
-
-  @Post('reset-password')
-  resetForgotPassword(@Query('id') id: string,
-    @Query('token')token: string, 
-    @Body() resetPasswordDTo:ResetPasswordDto){
-      return this.forgetPasswordService.resetForgotPassword(id,token,resetPasswordDTo)
-    }
-
-  // @Get()
-  // () {
-  //   return this.forgetPasswordService.findAll();
-  // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.forgetPasswordService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateForgetPasswordDto: UpdateForgetPasswordDto) {
-  //   return this.forgetPasswordService.update(+id, updateForgetPasswordDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.forgetPasswordService.remove(+id);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Post('reset')
+  resetForgotPassword(
+    @Body() resetPasswordDTo: ResetPasswordDto,
+    @GetUser() user:User
+  ) {
+    console.log('insode');
+    
+    return this.forgetPasswordService.resetForgotPassword(
+      resetPasswordDTo,user
+    );
+  }
 }
