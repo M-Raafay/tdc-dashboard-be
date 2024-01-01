@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, Types } from 'mongoose';
+import { Client } from 'src/clients/schema/client.schema';
 import { Member } from 'src/members/schema/members.schema';
 import { Teams } from 'src/teams/schema/teams.schema';
 
@@ -53,9 +54,8 @@ export class Project {
   @Prop()
   contract_type: RateType;
 
-  //@TODO add reference of client
-  // @Prop()
-  // client: string;
+  @Prop({ type: Types.ObjectId, ref: 'Client' })
+  client: Client;
 
   @Prop()
   consultant: string;

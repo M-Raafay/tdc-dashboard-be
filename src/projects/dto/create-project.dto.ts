@@ -10,7 +10,7 @@ export class CreateProjectDto {
 
   @IsString()
   @IsNotEmpty()
-  stack: string;
+  tech_stack: string;
 
   @IsString()
   @IsNotEmpty()
