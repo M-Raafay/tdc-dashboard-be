@@ -21,10 +21,10 @@ export class Lead {
   @Prop()
   date: Date;
 
-  @Prop({ type: Types.ObjectId, ref: 'Member' })
+  @Prop({ type: mongoose.Schema.Types.Mixed })
   salesTeamMember: Member;
 
-  @Prop({ type: Types.ObjectId, ref: 'Client' })
+  @Prop({ type: mongoose.Schema.Types.Mixed })
   client: Client;
 
   @Prop()

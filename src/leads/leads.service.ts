@@ -42,7 +42,7 @@ export class LeadsService {
       .populate('client');
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return await this.leadModel
       .findById({ _id: id })
       .populate('salesTeamMember')

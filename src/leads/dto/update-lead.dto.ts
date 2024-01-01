@@ -1,6 +1,7 @@
 import {
   IsBoolean,
   IsDate,
+  IsDateString,
   IsEnum,
   IsMongoId,
   IsNotEmpty,
@@ -17,7 +18,8 @@ export class UpdateLeadDto {
   @IsNotEmpty()
   name: string;
 
-  @IsDate()
+  // @todo change to datestring // also fix patch api
+  @IsDateString()
   date: Date;
 
   @IsMongoId()
@@ -36,11 +38,12 @@ export class UpdateLeadDto {
   @IsString()
   sentDescription: string;
 
-  @IsDate()
+  // @todo change to datestring
+  @IsDateString()
   @IsOptional()
   appointment: Date;
-
-  @IsDate()
+  // @todo change to datestring
+  @IsDateString()
   @IsOptional()
   call: Date;
 

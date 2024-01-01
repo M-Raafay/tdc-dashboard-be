@@ -55,6 +55,6 @@ export class ClientsService {
         'Client not found OR doesnot exists : Wrong ID',
       );
     }
-    return { message: 'Member Deleted ' };
+    return { message: 'Client Deleted ' };
   }
 }

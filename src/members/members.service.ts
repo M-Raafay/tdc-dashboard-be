@@ -155,69 +155,6 @@ export class MembersService {
     return member;
   }
 
-  // //used in jwt strategy
-  // async findMemberById(email: string) {
-  //   const memberEmail = email.toLowerCase();
-  //   const member = await this.memberModel.findOne({ email: memberEmail });
-  //   return member;
-  // }
-
-  //@ Remove
-  // async resetMemberPassword(id: string, passwordData: object) {
-  //   const oldData = await this.memberModel.findById(id);
-  //   const previousPassword = oldData.password;
-  //   const isMatch = await bcrypt.compare(
-  //     passwordData['old_password'],
-  //     previousPassword,
-  //   );
-  //   if (!isMatch) {
-  //     throw new NotAcceptableException('oldpassword doesnot match');
-  //   }
-
-  //   const hashedPassword = await bcrypt.hash(passwordData['new_password'], 10);
-  //   if (!hashedPassword) {
-  //     throw new InternalServerErrorException('error in password');
-  //   }
-  //   try {
-  //     const member = await this.memberModel.findByIdAndUpdate(
-  //       { _id: id },
-  //       { password: hashedPassword },
-  //       { new: true },
-  //     );
-
-  //     if (!member) {
-  //       throw new InternalServerErrorException('error in updating password');
-  //     }
-
-  //     return member;
-  //   } catch (error) {
-  //     throw new HttpException(
-  //       'couldnot reset password',
-  //       HttpStatus.INTERNAL_SERVER_ERROR,
-  //       error.message,
-  //     );
-  //   }
-  // }
-
-  // @ Remove
-  // async findByIdAndUpdatePassword(id: string, new_password: string) {
-  //   const data = await this.memberModel.findById(id);
-  //   console.log(data);
-  //   if (!data) {
-  //     throw new NotFoundException('admin not found');
-  //   }
-
-  //   const updatePassword = await this.memberModel.findByIdAndUpdate(
-  //     { _id: id },
-  //     { password: new_password },
-  //     { new: true },
-  //   );
-  //   if (!updatePassword) {
-  //     throw new NotFoundException('admin not found : password not updated');
-  //   }
-
-  //   return updatePassword;
-  // }
 
   //@ TODO remeove fields from data and populate
   async findAll() {

@@ -9,7 +9,7 @@ import { Roles } from 'src/roles/role.decorator';
 import { Role } from 'src/members/schema/members.schema';
 
 @UseGuards(JwtAuthGuard)
-@Roles(Role.SALES_AGENT, Role.BUSINESS_MANAGER)
+@Roles(Role.SALES_AGENT, Role.BUSINESS_MANAGER, Role.SUPERADMIN)
 @Controller('leads')
 export class LeadsController {
   constructor(private readonly leadsService: LeadsService) {}
@@ -26,7 +26,7 @@ export class LeadsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.leadsService.findOne(+id);
+    return this.leadsService.findOne(id);
   }
 
   @Patch(':id')
