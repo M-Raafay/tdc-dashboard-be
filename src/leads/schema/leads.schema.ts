@@ -21,6 +21,7 @@ export class Lead {
   @Prop()
   date: Date;
 
+  //@TODO make it embedded
   // @Prop({ type: mongoose.Schema.Types.Mixed })
   @Prop({ type: Types.ObjectId, ref: 'Member' })
   salesTeamMember: Member;

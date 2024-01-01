@@ -42,6 +42,7 @@ export class ProjectsService {
       .populate('team_lead', memberRemovedFields)
       .populate('sales_coordinator', salesMemberRemovedFields)
       .populate('teams_assigned', memberRemovedFields)
+      .populate('client')
       .exec();
     return data;
   }
@@ -52,6 +53,7 @@ export class ProjectsService {
       .populate('team_lead', memberRemovedFields)
       .populate('sales_coordinator', salesMemberRemovedFields)
       .populate('teams_assigned', memberRemovedFields)
+      .populate('client')
       .exec();
     if (!data) {
       throw new NotFoundException('project not found');
