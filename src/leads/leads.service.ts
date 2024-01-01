@@ -38,15 +38,16 @@ export class LeadsService {
   async findAll() {
     return await this.leadModel
       .find()
-      .populate('salesTeamMember')
+      .populate('salesTeamMember', memberSelectFields)
       .populate('client');
   }
 
   async findOne(id: string) {
-    return await this.leadModel
+    const data  = await this.leadModel
       .findById({ _id: id })
-      .populate('salesTeamMember')
+      .populate('salesTeamMember', memberSelectFields)
       .populate('client');
+    return data
   }
 
   async update(id: string, updateLeadDto: UpdateLeadDto) {

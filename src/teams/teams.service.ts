@@ -59,6 +59,10 @@ export class TeamsService {
         select: memberRemovedFields,
       })
       .populate({
+        path: 'projects',
+        //select: memberRemovedFields,
+      })
+      .populate({
         path: 'members',
         select: memberRemovedFields,
       });
