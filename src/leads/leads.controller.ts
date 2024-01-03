@@ -9,13 +9,18 @@ import { Roles } from 'src/roles/role.decorator';
 import { Role } from 'src/members/schema/members.schema';
 
 @UseGuards(JwtAuthGuard)
-@Roles(Role.SALES_AGENT, Role.BUSINESS_MANAGER, Role.SUPERADMIN)
+@Roles(
+  Role.SALES_AGENT,
+  Role.BUSINESS_MANAGER,
+  Role.SUPERADMIN,
+  Role.ADMIN,
+)
 @Controller('leads')
 export class LeadsController {
   constructor(private readonly leadsService: LeadsService) {}
 
   @Post('create')
-  create(@Body() createLeadDto: CreateLeadDto, @GetUser() member:User) {
+  create(@Body() createLeadDto: CreateLeadDto, @GetUser() member: User) {
     return this.leadsService.create(createLeadDto, member);
   }
 

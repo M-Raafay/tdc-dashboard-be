@@ -20,7 +20,7 @@ export class Task {
   @Prop({ type: Types.ObjectId, ref: 'Client' })
   client: Client;
 
-  @Prop({ type: Types.ObjectId, ref: 'Member' })
+  @Prop({ type: mongoose.Schema.Types.Mixed })
   createdBy: Member;
 
   @Prop({ type: Types.ObjectId, ref: 'Member' })
@@ -53,8 +53,8 @@ export class Task {
   @Prop()
   taskLink3: string;
 
-  @Prop({ default: false })
-  isHotLead: boolean;
+  @Prop({default : false})
+  isCompleted: boolean;
 
   @Prop({ default: Date.now })
   createdAt: Date;

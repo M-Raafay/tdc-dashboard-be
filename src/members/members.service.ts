@@ -80,6 +80,7 @@ export class MembersService {
   async login(logInMemberDto: LogInMemberDto) {
     const user = await this.memberModel.findOne({
       email: logInMemberDto.email,
+      isDeleted : false
     });
     if (!user) throw new NotFoundException('User with email doesnot exists');
 
@@ -159,7 +160,7 @@ export class MembersService {
   //@ TODO remeove fields from data and populate
   async findAll() {
     return await this.memberModel
-      .find({}, '-password')
+      .find({ isDeleted: false }, '-password')
       .populate({
         path: 'department',
         select: departmentRemovedFields,
@@ -169,7 +170,7 @@ export class MembersService {
         path: 'teams',
         select: teamRemovedFields,
         populate: { path: 'team_head', select: memberRemovedFields },
-      })
+      });
       // .populate({
       //   path: 'createdBy',
       //   select: memberRemovedFields,
@@ -181,7 +182,7 @@ export class MembersService {
     try {
       const objectId = new mongoose.Types.ObjectId(id);
       const memberData = await this.memberModel
-        .findById({ _id: objectId }, '-password')
+        .findOne({ _id: objectId , isDeleted : false}, '-password')
         .populate({
           path: 'department',
           select: departmentRemovedFields,
@@ -235,13 +236,19 @@ export class MembersService {
   //@Todo If member is removed, check if he is head and remove from there,  check if he is part of team and remove from there as well
   async remove(id: string) {
     try {
-      const member = await this.memberModel.findByIdAndDelete({ _id: id });
-      if (!member) {
-        throw new NotFoundException(
-          'Member not found OR doesnot exists : Wrong ID',
-        );
-      }
-      return { message: 'Member Deleted ' };
+      // const member = await this.memberModel.findByIdAndDelete({ _id: id });
+      // if (!member) {
+      //   throw new NotFoundException(
+      //     'Member not found OR doesnot exists : Wrong ID',
+      //   );
+      // }
+
+      const data = await this.memberModel.findByIdAndUpdate(
+        id,
+        { isDeleted : true},
+        { new: true },
+      );
+      return { message: 'Member Deactivated' };
     } catch (error) {
       throw new HttpException(error.message, error.statusCode);
     }

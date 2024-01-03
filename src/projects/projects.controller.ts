@@ -18,13 +18,13 @@ import { GetUser } from 'src/auth/getuser.decorator';
 import { User } from 'src/utils/interface';
 
 @UseGuards(JwtAuthGuard)
-@Roles(Role.BUSINESS_MANAGER, Role.SUPERADMIN)
+@Roles(Role.BUSINESS_MANAGER, Role.SUPERADMIN, Role.ADMIN)
 @Controller('project')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Post('create')
-  create(@Body() createProjectDto: CreateProjectDto, @GetUser() member:User) {
+  create(@Body() createProjectDto: CreateProjectDto, @GetUser() member: User) {
     return this.projectsService.create(createProjectDto, member);
   }
 

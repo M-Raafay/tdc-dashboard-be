@@ -9,7 +9,7 @@ import { Roles } from 'src/roles/role.decorator';
 import { User } from 'src/utils/interface';
 
 @UseGuards(JwtAuthGuard)
-@Roles(Role.SUPERADMIN, Role.HR)
+@Roles(Role.SUPERADMIN, Role.HR, Role.ADMIN)
 @Controller('teams')
 export class TeamsController {
   constructor(private readonly teamsService: TeamsService) {}

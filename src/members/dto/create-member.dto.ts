@@ -42,14 +42,13 @@ export class CreateMemberDto {
   teams: string[];
 
   @IsString()
-  @IsOptional()
   emergencyContactName: string;
 
   @IsString()
-  @IsOptional()
+  @MinLength(10)
+  @MaxLength(14)
   emergencyContactNumber: string;
 
   @IsString()
-  @IsOptional()
   emergencyContactRelation: string;
 }

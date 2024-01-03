@@ -1,4 +1,61 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateTaskDto } from './create-task.dto';
+import { IsArray, IsBoolean, IsDateString, IsMongoId, IsNotEmpty, IsOptional, IsString, MinLength } from "class-validator";
 
-export class UpdateTaskDto extends PartialType(CreateTaskDto) {}
+export class UpdateTaskDto {
+  @IsString()
+  @MinLength(3)
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsOptional()
+  @IsMongoId()
+  lead: string;
+
+  @IsString()
+  @IsOptional()
+  @IsMongoId()
+  client: string;
+
+  @IsString()
+  @IsOptional()
+  @IsMongoId()
+  salesMember: string;
+
+  @IsString()
+  @IsNotEmpty()
+  taskDiscription: string;
+
+  @IsString()
+  taskSideNote: string;
+
+  @IsDateString()
+  taskStartDate: Date;
+
+  @IsDateString()
+  taskEndDate: Date;
+
+  @IsString()
+  @IsMongoId()
+  taskSupervisor: string;
+
+  @IsArray()
+  @IsMongoId({ each: true })
+  @IsOptional()
+  taskTechResources: string[];
+
+  @IsString()
+  @IsOptional()
+  taskLink1: string;
+
+  @IsString()
+  @IsOptional()
+  taskLink2: string;
+
+  @IsString()
+  @IsOptional()
+  taskLink3: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isCompleted: boolean;
+}

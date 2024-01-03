@@ -68,6 +68,9 @@ export class Member {
 
   @Prop({ default: Date.now })
   createdAt: Date;
+
+  @Prop({default : false})
+  isDeleted  : boolean
 }
 
 export const MemberSchema = SchemaFactory.createForClass(Member);
