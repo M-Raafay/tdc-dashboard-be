@@ -9,12 +9,12 @@ import { Roles } from 'src/roles/role.decorator';
 import { Role } from 'src/members/schema/members.schema';
 
 @UseGuards(JwtAuthGuard)
-@Roles(
-  Role.SALES_AGENT,
-  Role.BUSINESS_MANAGER,
-  Role.SUPERADMIN,
-  Role.ADMIN,
-)
+// @Roles(
+//   Role.SALES_AGENT,
+//   Role.BUSINESS_MANAGER,
+//   Role.SUPERADMIN,
+//   Role.ADMIN,
+// )
 @Controller('leads')
 export class LeadsController {
   constructor(private readonly leadsService: LeadsService) {}

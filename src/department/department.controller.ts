@@ -18,7 +18,7 @@ import { Roles } from 'src/roles/role.decorator';
 import { User } from 'src/utils/interface';
 
 @UseGuards(JwtAuthGuard)
-@Roles(Role.SUPERADMIN, Role.ADMIN, Role.HR)
+//@Roles(Role.SUPERADMIN, Role.ADMIN, Role.HR)
 @Controller('department')
 export class DepartmentController {
   constructor(private readonly departmentService: DepartmentService) {}

@@ -30,7 +30,7 @@ export class MembersController {
   constructor(private readonly membersService: MembersService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Roles(Role.SUPERADMIN, Role.HR, Role.ADMIN)
+  //@Roles(Role.SUPERADMIN, Role.HR, Role.ADMIN)
   @Post('create')
   create(@Body() createMemberDto: CreateMemberDto, @GetUser() user: Member) {
     const forbiddenRoles = ['SUPERADMIN', 'ADMIN'];
@@ -56,7 +56,7 @@ export class MembersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Roles(Role.SUPERADMIN, Role.HR, Role.ADMIN)
+  //@Roles(Role.SUPERADMIN, Role.HR, Role.ADMIN)
   //@REMOVE made for testing
   @Get('byEmail')
   findOnebymail(@Body('email') email: string) {
@@ -64,14 +64,14 @@ export class MembersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Roles(Role.SUPERADMIN, Role.HR, Role.ADMIN)
+  //@Roles(Role.SUPERADMIN, Role.HR, Role.ADMIN)
   @Get()
   findAll(): any {
     return this.membersService.findAll();
   }
 
   @UseGuards(JwtAuthGuard)
-  @Roles(Role.SUPERADMIN, Role.HR, Role.ADMIN)
+  //@Roles(Role.SUPERADMIN, Role.HR, Role.ADMIN)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.membersService.findMemberById(id);

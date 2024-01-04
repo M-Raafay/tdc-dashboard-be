@@ -18,7 +18,7 @@ import { GetUser } from 'src/auth/getuser.decorator';
 import { User } from 'src/utils/interface';
 
 @UseGuards(JwtAuthGuard)
-@Roles(Role.BUSINESS_MANAGER, Role.SUPERADMIN, Role.ADMIN)
+//@Roles(Role.BUSINESS_MANAGER, Role.SUPERADMIN, Role.ADMIN)
 @Controller('project')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
