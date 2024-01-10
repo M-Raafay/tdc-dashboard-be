@@ -7,11 +7,17 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { MailerModule } from 'src/mailer/mailer.module';
+import { TeamsSchema } from 'src/teams/schema/teams.schema';
+import { PayrollSchema } from 'src/pay-roll/schema/Payroll.schema';
 
 @Module({
   imports: [
     MailerModule,
-    MongooseModule.forFeature([{ name: 'Member', schema: MemberSchema }]),
+    MongooseModule.forFeature([
+      { name: 'Member', schema: MemberSchema },
+      { name: 'Teams', schema: TeamsSchema },
+      { name: 'PayRoll', schema: PayrollSchema },
+    ]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

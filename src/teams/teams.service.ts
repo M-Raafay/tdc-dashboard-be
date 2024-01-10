@@ -101,7 +101,7 @@ export class TeamsService {
       if (previousData.team_head !== newHeadId) {
         await this.memberModel.findByIdAndUpdate(
           { _id: previousData.team_head },
-          { $set: { is_teamHead: false } },
+          { $set: { is_teamHead: false } },     // here we are making respective memmber team_head=false, but here a point is araising that a same member can be a team head of any other team/(project?), so in this case how we will handle the status of is_teamHead of taht same member?  or one member can only be a part of a single team?
           { new: true },
         );
         await this.memberModel.findByIdAndUpdate(

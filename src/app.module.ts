@@ -15,6 +15,7 @@ import { TeamsModule } from './teams/teams.module';
 import { ClientsModule } from './clients/clients.module';
 import { LeadsModule } from './leads/leads.module';
 import { TaskModule } from './task/task.module';
+import { PayRollModule } from './pay-roll/pay-roll.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { TaskModule } from './task/task.module';
     ClientsModule,
     LeadsModule,
     TaskModule,
+    PayRollModule,
   ],
   controllers: [AppController],
   providers: [

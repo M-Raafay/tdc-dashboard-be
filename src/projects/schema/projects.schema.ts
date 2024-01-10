@@ -32,11 +32,11 @@ export class Project {
   @Prop()
   name: string;
 
-  @Prop()
+@Prop() 
   tech_stack: string;
 
   @Prop({ type: Types.ObjectId, ref: 'Member' })
-  team_lead: Member;
+  team_lead?: Member;
 
   @Prop({ type: Types.ObjectId, ref: 'Member' })
   sales_coordinator: Member;
@@ -46,7 +46,10 @@ export class Project {
   // resource_assigned: Array<Member>;
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Teams' }] })
-  teams_assigned: Array<Teams>;
+  teams_assigned?: Array<Teams>;
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Member' }] })
+  members_assigned?: Array<Member>; // New field members_assigned
 
   @Prop()
   platform: string;

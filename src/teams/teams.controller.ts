@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
@@ -15,6 +15,7 @@ export class TeamsController {
   constructor(private readonly teamsService: TeamsService) {}
 
   @Post('create')
+  // create(@Body() createTeamDto: CreateTeamDto, @Req() user: any) {  // -----> here we can also directly use this approch  to get the user from req body which we sent in token payload
   create(@Body() createTeamDto: CreateTeamDto, @GetUser() user: User) {
     return this.teamsService.create(createTeamDto, user);
   }

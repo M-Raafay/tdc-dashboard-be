@@ -39,7 +39,7 @@ export class Member {
   //@TODO Add 2 contact number fields
 
   @Prop({ type: Types.ObjectId, ref: 'Department', default: null })
-  department: Department; /// add reference to department schema. update dto
+  department: Department; // add reference to department schema. update dto
 
   // @ TODO make it array of teams
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Teams', default: null }] })
@@ -71,6 +71,9 @@ export class Member {
 
   @Prop({default : false})
   isDeleted  : boolean
+  
+  @Prop({ required: true })
+  currentSalary: number;
 }
 
 export const MemberSchema = SchemaFactory.createForClass(Member);

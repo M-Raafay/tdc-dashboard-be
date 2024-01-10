@@ -21,7 +21,8 @@ export class Teams {
   department: Department;
 
   @Prop({ type: Types.ObjectId, ref: 'Member' })
-  team_head: mongoose.Types.ObjectId;
+  team_head: mongoose.Types.ObjectId;   //are we can use here a reference table name , instead of writting the moongose id?   -----> cleared after reviewing the service file  create code in which i understand that it(team_head which store a id, which is a member id actually) will be use for running query in memmber model, but one question that, this same mmember can already be a team_head of any other team or not?
+  //Same memmber is a team memmber in multiple teams............
 
   //@TODO memebers array
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Member' }] })

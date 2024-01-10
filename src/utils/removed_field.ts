@@ -1,9 +1,11 @@
 export const memberRemovedFields = {
   password: 0,
+  currentSalary:0,
   //role: 0,
   createdAt: 0,
   __v:0
 };
+
 export const memberSelectFields = {
   name: 1,
   email: 1,

@@ -4,7 +4,12 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Project } from './schema/projects.schema';
 import { Model } from 'mongoose';
-import { memberRemovedFields, memberSelectFields, salesMemberRemovedFields } from 'src/utils/removed_field';
+import {
+  memberRemovedFields,
+  memberSelectFields,
+  salesMemberRemovedFields,
+  teamRemovedFields,
+} from 'src/utils/removed_field';
 import { MailerService } from 'src/mailer/mailer.service';
 import { MembersService } from 'src/members/members.service';
 import { Member } from 'src/members/schema/members.schema';
@@ -24,10 +29,17 @@ export class ProjectsService {
       .findById(member._id)
       .select(memberSelectFields);
 
-    const data = await this.projectModel.create({
+    const data: any = await this.projectModel.create({
       ...createProjectDto,
       createdBy: createdByData,
     });
+
+    // If teams_assigned is not provided, assign members to members_assigned
+    if (!createProjectDto.teams_assigned && createProjectDto.members_assigned) {
+      data.members_assigned = createProjectDto.members_assigned;
+      await data.save();
+    }
+
     // const techLead = await this.memberService.findMemberById(createProjectDto.team_lead)
     // console.log(techLead);
     // if(!techLead)
@@ -42,6 +54,7 @@ export class ProjectsService {
       .populate('team_lead', memberRemovedFields)
       .populate('sales_coordinator', salesMemberRemovedFields)
       .populate('teams_assigned', memberRemovedFields)
+      .populate('members_assigned', memberRemovedFields) // Populate members_assigned
       .populate('client')
       .exec();
     return data;
@@ -54,6 +67,15 @@ export class ProjectsService {
       .populate('sales_coordinator', salesMemberRemovedFields)
       .populate('teams_assigned', memberRemovedFields)
       .populate('client')
+      .populate('members_assigned', memberRemovedFields) // Populate members_assigned
+      // .populate({  // Populate members_assigned with nested populate
+      //   path: 'members_assigned',
+      //   populate: {
+      //     path: 'teams',
+      //     model: 'Teams', // Specify the model for the nested population
+      //     select: teamRemovedFields,
+      //   },
+      // })
       .exec();
     if (!data) {
       throw new NotFoundException('project not found');

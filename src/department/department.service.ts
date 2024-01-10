@@ -27,8 +27,8 @@ export class DepartmentService {
       const createdByData = await this.memberModel.findById(user._id).select(memberSelectFields);
       if (createDepartmentDto.departmentHead) {
         const memberHead = await this.memberModel.findByIdAndUpdate(
-          { _id: createDepartmentDto.departmentHead },
-          { is_departmentHead: true },
+          { _id: createDepartmentDto.departmentHead },   
+          { is_departmentHead: true },   // here same member can also be already departmenthead in any other department?
           { new: true },
         );
 

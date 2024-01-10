@@ -17,5 +17,6 @@ async function bootstrap() {
   console.log(configService.get('PORT'));
 
   await app.listen(Number(configService.get('PORT')) || 3001);
+  console.log(`Connected to MongoDB, app listening on port: https://localhost:${process.env.PORT}`);
 }
 bootstrap();

@@ -31,6 +31,10 @@ export class CreateProjectDto {
   @IsOptional()
   teams_assigned: string[];
 
+  @IsMongoId({ each: true })
+  @IsOptional()
+  members_assigned: string[];
+
   @IsString()
   @IsNotEmpty()
   platform: string;

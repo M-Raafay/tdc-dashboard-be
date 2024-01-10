@@ -19,13 +19,22 @@ import { MailerService } from 'src/mailer/mailer.service';
 import { ConfigService } from '@nestjs/config';
 import { LogInMemberDto } from './dto/login-member.dto';
 import { JwtService } from '@nestjs/jwt';
-import { departmentRemovedFields, memberRemovedFields, memberSelectFields, teamRemovedFields } from 'src/utils/removed_field';
+import {
+  departmentRemovedFields,
+  memberRemovedFields,
+  memberSelectFields,
+  teamRemovedFields,
+} from 'src/utils/removed_field';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { Teams } from 'src/teams/schema/teams.schema';
+import { PayRoll } from 'src/pay-roll/schema/Payroll.schema';
 
 @Injectable()
 export class MembersService {
   constructor(
     @InjectModel('Member') private memberModel: Model<Member>,
+    @InjectModel('Teams') private teamsModel: Model<Teams>,
+    @InjectModel('PayRoll') private payRollModel: Model<PayRoll>,
     private readonly emailService: MailerService,
     private configService: ConfigService,
     private jwtService: JwtService,
@@ -34,8 +43,9 @@ export class MembersService {
   // new create member with password sent in mail
   // @ TODO check if the department and team exists in their respective tables??
   async createMember(createMemberDto: CreateMemberDto, user) {
-    const createdByData = await this.memberModel.findById(user._id)
-        .select(memberSelectFields);
+    const createdByData = await this.memberModel
+      .findById(user._id)
+      .select(memberSelectFields);
     const randomPassword = generateRandomPassword(10);
 
     const hashedPassword = await bcrypt.hash(randomPassword, 10);
@@ -80,7 +90,7 @@ export class MembersService {
   async login(logInMemberDto: LogInMemberDto) {
     const user = await this.memberModel.findOne({
       email: logInMemberDto.email,
-      isDeleted : false
+      isDeleted: false,
     });
     if (!user) throw new NotFoundException('User with email doesnot exists');
 
@@ -156,7 +166,6 @@ export class MembersService {
     return member;
   }
 
-
   //@ TODO remeove fields from data and populate
   async findAll() {
     return await this.memberModel
@@ -171,10 +180,10 @@ export class MembersService {
         select: teamRemovedFields,
         populate: { path: 'team_head', select: memberRemovedFields },
       });
-      // .populate({
-      //   path: 'createdBy',
-      //   select: memberRemovedFields,
-      // });
+    // .populate({
+    //   path: 'createdBy',
+    //   select: memberRemovedFields,
+    // });
   }
 
   // @TODO good exception handling here
@@ -182,7 +191,7 @@ export class MembersService {
     try {
       const objectId = new mongoose.Types.ObjectId(id);
       const memberData = await this.memberModel
-        .findOne({ _id: objectId , isDeleted : false}, '-password')
+        .findOne({ _id: objectId, isDeleted: false }, '-password')
         .populate({
           path: 'department',
           select: departmentRemovedFields,
@@ -192,11 +201,11 @@ export class MembersService {
           path: 'teams',
           select: teamRemovedFields,
           populate: { path: 'team_head', select: memberRemovedFields },
-        })
-        // .populate({
-        //   path: 'createdBy',
-        //   select: memberRemovedFields,
-        // });
+        });
+      // .populate({
+      //   path: 'createdBy',
+      //   select: memberRemovedFields,
+      // });
       if (!memberData) {
         throw new NotFoundException('Member not found');
       }
@@ -233,21 +242,53 @@ export class MembersService {
     }
   }
 
-  //@Todo If member is removed, check if he is head and remove from there,  check if he is part of team and remove from there as well
+  // Following code added by Zarib
+  // @Done by Zarib: Completed If member is removed, check if he is head and remove from there,
+  // check if he is part of a team and remove from there as well, and also remove the payroll related to that member
   async remove(id: string) {
     try {
-      // const member = await this.memberModel.findByIdAndDelete({ _id: id });
-      // if (!member) {
-      //   throw new NotFoundException(
-      //     'Member not found OR doesnot exists : Wrong ID',
-      //   );
+      // Find the member to be removed
+      const memberToRemove = await this.memberModel.findById(id);
+      if (!memberToRemove) {
+        throw new NotFoundException(
+          'Member not found or does not exist: Wrong ID',
+        );
+      }
+
+      // Check if the member is a team head
+      if (memberToRemove.is_teamHead) {
+        // Remove the member from the head position
+        await this.teamsModel.updateMany(
+          { team_head: memberToRemove._id },
+          { $set: { team_head: null } },
+        );
+      }
+
+      // Check if the member is part of any teams
+      if (memberToRemove.teams && memberToRemove.teams.length > 0) {
+        // Remove the member from all teams
+        await this.teamsModel.updateMany(
+          { members: memberToRemove._id },
+          { $pull: { members: memberToRemove._id } },
+        );
+      }
+
+      // // Soft delete the associated PayRoll by finding and deleting it
+      // const payRollToDelete = await this.payRollModel.findOne({
+      //   member: memberToRemove._id,
+      // });
+
+      // if (payRollToDelete) {
+      //   await this.payRollModel.findByIdAndDelete(payRollToDelete._id);
       // }
 
-      const data = await this.memberModel.findByIdAndUpdate(
+      // Soft delete the member by setting isDeleted to true
+      const updatedMember = await this.memberModel.findByIdAndUpdate(
         id,
-        { isDeleted : true},
+        { isDeleted: true },
         { new: true },
       );
+
       return { message: 'Member Deactivated' };
     } catch (error) {
       throw new HttpException(error.message, error.statusCode);

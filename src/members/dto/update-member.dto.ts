@@ -52,4 +52,9 @@ export class UpdateMemberDto {
   @IsString()
   @IsOptional()
   emergencyContactRelation: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsNumber()
+  currentSalary?: number;
 }

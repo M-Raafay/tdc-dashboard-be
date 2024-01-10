@@ -51,4 +51,8 @@ export class CreateMemberDto {
 
   @IsString()
   emergencyContactRelation: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  currentSalary: number;
 }
