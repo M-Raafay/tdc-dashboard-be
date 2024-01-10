@@ -30,6 +30,8 @@ export class ForgetPasswordService {
 
     if (!memberData) {
       throw new NotFoundException('wrong email: user doesnot exists');
+    } else if (memberData.isDeleted) {
+      throw new NotFoundException('Member is deleted');
     } else {
       const res = this.createTokenAndMail(memberData);
       return res;
@@ -87,7 +89,7 @@ export class ForgetPasswordService {
         throw new NotAcceptableException('passwords donot match');
       }
       const hashedPassword = await bcrypt.hash(new_password, 10);
-    
+
       const memberData = await this.memberModel.findByIdAndUpdate(
         { _id: user._id },
         { password: hashedPassword },
