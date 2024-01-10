@@ -12,46 +12,48 @@ import {
   MinLength,
 } from 'class-validator';
 import { Role } from '../schema/members.schema';
+import { CreateMemberDto } from './create-member.dto';
+import { PartialType } from '@nestjs/mapped-types';
 
-export class UpdateMemberDto {
+export class UpdateMemberDto extends PartialType(CreateMemberDto) {
   @IsString()
   @MinLength(3)
   @IsNotEmpty()
-  name: string;
+  name?: string;
 
   @IsEmail()
   @IsNotEmpty()
   @Transform(({ value }) => value.toLowerCase())
-  email: string;
+  email?: string;
 
   @IsString()
   @MinLength(10)
   @MaxLength(14)
-  contactNumber: string;
+  contactNumber?: string;
 
   @IsEnum(Role)
-  role: Role;
+  role?: Role;
 
   @IsOptional()
   @IsMongoId()
-  department: string;
+  department?: string;
 
   @IsArray()
   @IsMongoId({ each: true })
   @IsOptional()
-  teams: string[];
+  teams?: string[];
 
   @IsString()
   @IsOptional()
-  emergencyContactName: string;
+  emergencyContactName?: string;
 
   @IsString()
   @IsOptional()
-  emergencyContactNumber: string;
+  emergencyContactNumber?: string;
 
   @IsString()
   @IsOptional()
-  emergencyContactRelation: string;
+  emergencyContactRelation?: string;
 
   @IsOptional()
   @IsNotEmpty()

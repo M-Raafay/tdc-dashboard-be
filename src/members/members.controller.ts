@@ -79,9 +79,11 @@ export class MembersController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMemberDto: UpdateMemberDto) {
-    return this.membersService.update(id, updateMemberDto);
+  partiallyUpdate(@Param('id') id: string, @Body() updateMemberDto: UpdateMemberDto) {
+    return this.membersService.partiallyUpdate(id, updateMemberDto);
   }
+
+
   @UseGuards(JwtAuthGuard)
   @Roles(Role.SUPERADMIN, Role.HR, Role.ADMIN)
   @Delete(':id')

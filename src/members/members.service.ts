@@ -42,7 +42,7 @@ export class MembersService {
 
   // new create member with password sent in mail
   // @ TODO check if the department and team exists in their respective tables??
-  async createMember(createMemberDto: CreateMemberDto, user) {
+  async createMember(createMemberDto: CreateMemberDto, user: Member) {
     const createdByData = await this.memberModel
       .findById(user._id)
       .select(memberSelectFields);
@@ -73,7 +73,7 @@ export class MembersService {
       const emailUser = this.configService.get<string>('EMAIL_USER_tester');
       await this.emailService.sendEmail(emailUser, template);
 
-      const { password,currentSalary, ...userData } = receivedData;
+      const { password, currentSalary, ...userData } = receivedData;
       return userData;
     } catch (error) {
       if (error.code === 11000 || error.code === 11001) {
@@ -216,30 +216,40 @@ export class MembersService {
     }
   }
 
-  async update(id: string, updateMemberDto: UpdateMemberDto) {
-    const user = await this.memberModel.findById(id);
-    if (!user) {
-      throw new HttpException(
-        'Member not found OR doesnot exists : Wrong ID',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
+  async partiallyUpdate(id: string, updateMemberDto: UpdateMemberDto) {
     try {
-      const data = await this.memberModel.findByIdAndUpdate(
-        id,
-        { ...updateMemberDto },
-        { new: true },
-      );
-      const receivedData = data.toObject();
+      const existingMember = await this.memberModel.findById(id).exec();
 
+      if (!existingMember) {
+        throw new NotFoundException(
+          'Member not found OR doesnot exists : Wrong ID',
+        );
+      }
+
+      // Check if the new email in the DTO exists for any other member
+      if (
+        updateMemberDto.email &&
+        (await this.memberModel.findOne({
+          email: updateMemberDto.email,
+          _id: { $ne: id }, // Exclude the current member from the check
+        }))
+      ) {
+        throw new ConflictException('Email already exists for another member');
+      }
+
+      const updatedMember = Object.assign(existingMember, updateMemberDto);
+      const saveData = await updatedMember.save();
+
+      const receivedData = saveData.toObject();
       const { password, ...restdata } = receivedData;
-      return restdata;
+
+      return {
+        message: `Member with ID ${id} partially-updated successfully`,
+        data: restdata,
+      };
     } catch (error) {
-      throw new HttpException(
-        'Failed to update',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      console.error(error);
+      throw error;
     }
   }
 
@@ -274,7 +284,7 @@ export class MembersService {
         );
       }
 
-      // // Soft delete the associated PayRoll by finding and deleting it
+      // // Soft delete the associated PayRoll by finding and deleting it  ----> will discuss
       // const payRollToDelete = await this.payRollModel.findOne({
       //   member: memberToRemove._id,
       // });
