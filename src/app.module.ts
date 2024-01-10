@@ -16,6 +16,7 @@ import { ClientsModule } from './clients/clients.module';
 import { LeadsModule } from './leads/leads.module';
 import { TaskModule } from './task/task.module';
 import { PayRollModule } from './pay-roll/pay-roll.module';
+import { EarningsModule } from './earnings/earnings.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { PayRollModule } from './pay-roll/pay-roll.module';
     LeadsModule,
     TaskModule,
     PayRollModule,
+    EarningsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -47,6 +47,7 @@ export class MembersService {
       .findById(user._id)
       .select(memberSelectFields);
     const randomPassword = generateRandomPassword(10);
+    // const randomPassword = '123456';
 
     const hashedPassword = await bcrypt.hash(randomPassword, 10);
     if (!hashedPassword)
@@ -72,7 +73,7 @@ export class MembersService {
       const emailUser = this.configService.get<string>('EMAIL_USER_tester');
       await this.emailService.sendEmail(emailUser, template);
 
-      const { password, ...userData } = receivedData;
+      const { password,currentSalary, ...userData } = receivedData;
       return userData;
     } catch (error) {
       if (error.code === 11000 || error.code === 11001) {
