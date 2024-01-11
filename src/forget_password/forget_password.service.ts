@@ -53,7 +53,7 @@ export class ForgetPasswordService {
 
       await this.emailService.sendEmail(email, emailBody);
 
-      return { message: 'Check your email' };
+      return { message: 'Check your emailssss' };
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
