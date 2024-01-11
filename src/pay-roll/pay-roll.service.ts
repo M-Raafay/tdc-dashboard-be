@@ -266,6 +266,8 @@ export class PayRollService {
     id: string,
     partialUpdateDto: Partial<UpdatePayRollDto>,
   ) {
+
+    //here we are not set any check for duplication so use above update api
     try {
       const existingPayRoll = await this.payRollModel.findById(id).exec();
 
