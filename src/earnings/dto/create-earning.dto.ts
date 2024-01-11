@@ -11,19 +11,19 @@ import {
 export class CreateEarningDto {
   @IsNotEmpty()
   @IsString()
-  readonly member: string;
+  member: string;
 
   @IsNotEmpty()
   @IsString()
-  readonly department: string;
+  department: string;
 
   @IsNotEmpty()
   @IsString()
-  readonly month: string;
+  month: string;
 
   @IsNotEmpty()
   @IsNumber()
-  readonly year: number;
+  year: number;
 
   //   @IsNotEmpty()
   //   @IsNumber()
@@ -31,23 +31,23 @@ export class CreateEarningDto {
 
   @IsOptional()
   @IsNumber()
-  readonly totalOvertimeHours: number; //after we will get data from clockify api and will calculate
+  totalOvertimeHours: number; //after we will get data from clockify api and will calculate
 
   @IsOptional()
   @IsNumber()
-  readonly totalUnderTimeHours: number; //after we will get data from clockify api and will calculate
+  totalUnderTimeHours: number; //after we will get data from clockify api and will calculate
 
   @IsArray()
-  readonly projectsAssigned: string[];
+  projectsAssigned: string[];
 
   @IsArray()
-  readonly projectsWorkedOn: string[];
+  projectsWorkedOn: string[];
 
-  @IsNotEmpty()
-  @IsNumber()
-  readonly contractedHours: number;
+  // @IsNotEmpty()
+  // @IsNumber()
+  // readonly contractedHours: number;
 
   @IsOptional()
   @IsNumber()
-  readonly totalDeductions: number;
+  totalDeductions: number;
 }
