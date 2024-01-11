@@ -111,7 +111,7 @@ export class PayRollService {
       const payRolls = await this.payRollModel
         .find()
         .populate('member', 'name email')
-        .populate({ path: 'department', select: 'name departmentHead' });
+        .populate({ path: 'department', select: 'name' });
 
       return { message: `payRolls of all Departments`, data: payRolls };
     } catch (error) {
@@ -129,7 +129,7 @@ export class PayRollService {
       const payRoll = await this.payRollModel
         .findById(id)
         .populate('member', 'name email')
-        .populate({ path: 'department', select: 'name departmentHead' })
+        .populate({ path: 'department', select: 'name' })
         .exec();
       if (!payRoll) {
         throw new NotFoundException('PayRoll not found');

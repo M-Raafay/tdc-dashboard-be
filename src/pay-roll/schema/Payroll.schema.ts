@@ -15,7 +15,7 @@ export class PayRoll extends Document {
     ref: 'Department',
     default: null,
   })
-  department: mongoose.Types.ObjectId;
+  department: mongoose.Types.ObjectId;  //here we will put deprtname , pendingTask: When we done it and click on create than it goes to the member table and checkif department is empty tahn update the depaertment name by this one
 
   @Prop({ required: true })
   accountTitle: string;
