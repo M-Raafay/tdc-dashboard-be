@@ -158,6 +158,8 @@ export class PayRollService {
       // Retrieve all payrolls for the found department
       const payRolls = await this.payRollModel
         .find({ department: department._id })
+        .populate('member', 'name email')
+        .populate({ path: 'department', select: 'name' })
         .exec();
 
       return { message: `payRolls for '${departmentName}'`, data: payRolls };
