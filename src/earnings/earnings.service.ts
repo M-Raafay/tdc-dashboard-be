@@ -1,6 +1,7 @@
 // src/earnings/earnings.service.ts
 
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Earnings } from './schema/earnings.schema';
@@ -14,6 +15,7 @@ export class EarningsService {
   constructor(
     @InjectModel('Earnings') private readonly earningsModel: Model<Earnings>,
     @InjectModel('Member') private readonly memberModel: Model<Member>,
+    private configService: ConfigService,
   ) {}
 
   async create(createEarningDto: CreateEarningDto): Promise<Earnings> {
@@ -22,22 +24,35 @@ export class EarningsService {
       .findById(createEarningDto.member)
       .select('currentSalary')
       .exec();
+    console.log('currentSalary: ', currentSalary);
+
+    const contractedHours = parseInt(
+      this.configService.get('CONTRACTED_HOURS'),
+      10,
+    );
+    console.log('contractedHours:   ', contractedHours);
 
     // Calculate totalEarnings, netSalary, and other fields
-    const totalWorkedHours =
+    const totalWorkedHours = Math.round(
       createEarningDto.totalOvertimeHours +
-      createEarningDto.totalUnderTimeHours;
+        createEarningDto.totalUnderTimeHours,
+    );
 
-    const perHourRate = currentSalary / createEarningDto.contractedHours;
-    const totalEarnings = perHourRate * totalWorkedHours;
-    const netSalary = totalEarnings - createEarningDto.totalDeductions;
+    const perHourRate = Math.round(currentSalary / contractedHours);
+    const totalEarnings = Math.round(perHourRate * totalWorkedHours);
+    const netSalary = Math.round(
+      totalEarnings - createEarningDto.totalDeductions,
+    );
 
-    const createdEarnings = new this.earningsModel({
-      ...createEarningDto,
+    const createdEarnings = await this.earningsModel.create({
+      contractedHours,
+      currentSalary,
       totalWorkedHours,
       totalEarnings,
       netSalary,
+      ...createEarningDto
     });
+    console.log('createdEarnings:  ', createdEarnings);
 
     // Save the calculated values to the database
     return createdEarnings.save();
@@ -86,12 +101,16 @@ export class EarningsService {
       .select('currentSalary')
       .exec();
 
+    const contractedHours = parseInt(
+      this.configService.get('CONTRACTED_HOURS'),
+      10,
+    );
     // Calculate totalEarnings, netSalary, and other fields
     const totalWorkedHours =
       updateEarningDto.totalOvertimeHours +
       updateEarningDto.totalUnderTimeHours;
 
-    const perHourRate = currentSalary / updateEarningDto.contractedHours;
+    const perHourRate = currentSalary / contractedHours;
     const totalEarnings = perHourRate * totalWorkedHours;
     const netSalary = totalEarnings - updateEarningDto.totalDeductions;
 

@@ -30,29 +30,29 @@ export class Earnings extends Document {
   // @Prop()
   // overtimeRate: number;
 
-  @Prop()
+  @Prop({ required: true })
   projectsAssigned: string[]; // Array of Project IDs assigned to the member, will get from projects model against a member id
 
-  @Prop()
+  @Prop({ required: true })
   projectsWorkedOn: string[]; // Array of Project IDs assigned to the member, , will get from projects model against a member id
   // Additional fields
 
   @Prop({ required: true })
   contractedHours: number; // will get from env file
 
-  @Prop({ default: 0 })
+  @Prop({ required: true, default: 0 })
   totalOvertimeHours: number; //after we will get data from clockify api and will calculate
 
-  @Prop({ default: 0 })
+  @Prop({ required: true, default: 0 })
   totalUnderTimeHours: number; //after we will get data from clockify api and will calculate
 
-  @Prop({ default: 0 })
+  @Prop({ required: true, default: 0 })
   totalWorkedHours: number; //after we will get data from clockify api and will calculate
 
-  @Prop({ default: 0 })
+  @Prop({ required: true, default: 0 })
   totalEarnings: number; //representing gross salary
 
-  @Prop({ default: 0 })
+  @Prop({ required: true, default: 0 })
   totalDeductions: number;
 
   @Prop({ required: true, default: 0 })
