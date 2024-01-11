@@ -29,11 +29,14 @@ export class ForgetPasswordService {
     const memberData = await this.memberModel.findOne({ email: email });
 
     if (!memberData) {
-      throw new NotFoundException('wrong email: user doesnot exists');
-    } else {
-      const res = this.createTokenAndMail(memberData);
-      return res;
+      throw new NotFoundException('Wrong email: user does not exist');
     }
+    if (memberData.isDeleted) {
+      throw new NotFoundException('Member is deleted');
+    }
+
+    const res = this.createTokenAndMail(memberData);
+    return res;
   }
 
   async createTokenAndMail(data: Member) {
@@ -53,7 +56,7 @@ export class ForgetPasswordService {
 
       await this.emailService.sendEmail(email, emailBody);
 
-      return { message: 'Check your emailssss' };
+      return { message: 'Check your email' };
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
@@ -87,7 +90,7 @@ export class ForgetPasswordService {
         throw new NotAcceptableException('passwords donot match');
       }
       const hashedPassword = await bcrypt.hash(new_password, 10);
-    
+
       const memberData = await this.memberModel.findByIdAndUpdate(
         { _id: user._id },
         { password: hashedPassword },
