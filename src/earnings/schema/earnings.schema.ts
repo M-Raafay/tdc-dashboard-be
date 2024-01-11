@@ -9,54 +9,54 @@ export class Earnings extends Document {
   _id: mongoose.Types.ObjectId;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Member', default: null })
-  member: mongoose.Types.ObjectId;
+  member: mongoose.Types.ObjectId; //can get deprtment from member model, but will suggest from the payroll table, in case he is at internship than it will get from member table on second option
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Department',
     default: null,
   })
-  department: mongoose.Types.ObjectId;
+  department: mongoose.Types.ObjectId; //can get department from payroll table aginst this member, but in case he is at internship, tahn there  us chance we amde payroll or not, if we will not amke pay roll than we will get it from the member table on second opption.
 
   @Prop({ required: true })
-  month: string;
+  month: string; // can get value automatically from system
 
   @Prop({ required: true })
-  year: number;
+  year: number; // can get value automatically from system
 
   @Prop({ required: true })
-  basicSalary: number;
+  currentSalary: number; // will get from the member table
 
   // @Prop()
   // overtimeRate: number;
 
   @Prop()
-  projectsAssigned: string[]; // Array of Project IDs assigned to the member
+  projectsAssigned: string[]; // Array of Project IDs assigned to the member, will get from projects model against a member id
 
   @Prop()
-  projectsWorkedOn: string[]; // Array of Project IDs assigned to the member
+  projectsWorkedOn: string[]; // Array of Project IDs assigned to the member, , will get from projects model against a member id
   // Additional fields
 
   @Prop({ required: true })
-  contractedHours: number;
+  contractedHours: number; // will get from env file
 
-  @Prop()
-  totalOvertimeHours: number;
+  @Prop({ default: 0 })
+  totalOvertimeHours: number; //after we will get data from clockify api and will calculate
 
-  @Prop()
-  totalUnderTimeHours: number;
+  @Prop({ default: 0 })
+  totalUnderTimeHours: number; //after we will get data from clockify api and will calculate
 
-  @Prop()
-  totalWorkedHours: number;
+  @Prop({ default: 0 })
+  totalWorkedHours: number; //after we will get data from clockify api and will calculate
 
-  @Prop()
+  @Prop({ default: 0 })
   totalEarnings: number; //representing gross salary
 
-  @Prop()
+  @Prop({ default: 0 })
   totalDeductions: number;
 
-  @Prop({ required: true })
-  netSalary: number;
+  @Prop({ required: true, default: 0 })
+  netSalary: number; //we will calculate
 
   // // Timestamps
   // createdAt: Date;
