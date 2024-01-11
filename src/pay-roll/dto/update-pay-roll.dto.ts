@@ -5,40 +5,38 @@ import {
   IsNumber,
   IsString,
   IsMongoId,
+  MaxLength,
+  MinLength,
 } from 'class-validator';
 import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { CreatePayRollDto } from './create-pay-roll.dto';
 
 export class UpdatePayRollDto extends PartialType(CreatePayRollDto) {
-  @ApiPropertyOptional({ type: String })
   @IsMongoId()
   @IsOptional()
   member?: string;
 
-  @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()
   @IsString()
   accountTitle?: string;
 
-  @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  @MinLength(13, { message: 'CNIC must be at least 13 characters long' })
+  @MaxLength(13, { message: 'CNIC must be at most 13 characters long' })
   cnic?: string;
-
-  @ApiPropertyOptional()
+  
   @IsOptional()
   @IsNotEmpty()
   @IsString()
   accountNo?: string;
 
-  @ApiPropertyOptional()
   @IsOptional()
   @IsNotEmpty()
   @IsNumber()
   netSalary?: number;
 
-  @ApiPropertyOptional({ type: String })
   @IsMongoId()
   @IsOptional()
   department?: string;
