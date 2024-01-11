@@ -25,36 +25,19 @@ export class ForgetPasswordService {
     private configService: ConfigService,
   ) {}
 
-  // async checkMail(email: string) {
-  //   const memberData = await this.memberModel.findOne({ email: email });
+  async checkMail(email: string) {
+    const memberData = await this.memberModel.findOne({ email: email });
 
-  //   if (!memberData) {
-  //     throw new NotFoundException('wrong email: user doesnot exists');
-  //   } else if (memberData.isDeleted) {
-  //     throw new NotFoundException('Member is deleted');
-  //   } else {
-  //     const res = this.createTokenAndMail(memberData);
-  //     return res;
-  //   }
-  // }
+    if (!memberData) {
+      throw new NotFoundException('Wrong email: user does not existsss');
+    }
+    if (memberData.isDeleted) {
+      throw new NotFoundException('Member is deleted');
+    }
 
-
-
-async checkMail(email: string) {
-  const memberData = await this.memberModel.findOne({ email: email });
-
-  if (!memberData) {
-    throw new NotFoundException('Wrong email: user does not existsss');
+    const res = this.createTokenAndMail(memberData);
+    return res;
   }
-  if (memberData.isDeleted) {
-    throw new NotFoundException('Member is deleted');
-  }
-
-  const res = this.createTokenAndMail(memberData);
-  return res;
-}
-
-
 
   async createTokenAndMail(data: Member) {
     try {
