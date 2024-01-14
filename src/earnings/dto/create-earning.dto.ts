@@ -17,18 +17,6 @@ export class CreateEarningDto {
   @IsString()
   department: string;
 
-  @IsNotEmpty()
-  @IsString()
-  month: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  year: number;
-
-  //   @IsNotEmpty()
-  //   @IsNumber()
-  //   readonly currentSalary: number; // will get from the member table
-
   @IsOptional()
   @IsNumber()
   totalOvertimeHours: number; //after we will get data from clockify api and will calculate
@@ -37,15 +25,11 @@ export class CreateEarningDto {
   @IsNumber()
   totalUnderTimeHours: number; //after we will get data from clockify api and will calculate
 
-  @IsArray()
-  projectsAssigned: string[];
+  // @IsArray()
+  // projectsAssigned: string[];
 
   @IsArray()
   projectsWorkedOn: string[];
-
-  // @IsNotEmpty()
-  // @IsNumber()
-  // readonly contractedHours: number;
 
   @IsOptional()
   @IsNumber()

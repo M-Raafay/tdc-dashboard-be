@@ -29,28 +29,17 @@ export class PayRollController {
     return this.payRollService.create(createPayRollDto);
   }
 
-  @Get('/getAllUnpopulated')
-  findAll() {
-    return this.payRollService.findAll();
-  }
-
-  @Get('/getByIdUnpopulated/:id')
-  findOne(@Param('id') id: string) {
-    return this.payRollService.findOne(id);
-  }
-
   // New endpoint to fetch all PayRoll data with populated references
   @Get('/getAll')
   findAllPopulated() {
     return this.payRollService.findAllPopulated();
   }
-  
+
   // New endpoint to fetch a specific PayRoll with populated references
   @Get('/getById/:id')
   findOnePopulated(@Param('id') id: string) {
     return this.payRollService.findOnePopulated(id);
   }
-
 
   // New endpoint to search payrolls by department name
   @Get('/getByDepartmentName')
@@ -69,13 +58,13 @@ export class PayRollController {
     return this.payRollService.update(id, updatePayRollDto);
   }
 
-  @Patch('/partiallyUpdateById/:id')
-  partiallyUpdate(
-    @Param('id') id: string,
-    @Body() updatePayRollDto: UpdatePayRollDto,
-  ) {
-    return this.payRollService.partiallyUpdate(id, updatePayRollDto);
-  }
+  // @Patch('/partiallyUpdateById/:id')
+  // partiallyUpdate(
+  //   @Param('id') id: string,
+  //   @Body() updatePayRollDto: UpdatePayRollDto,
+  // ) {
+  //   return this.payRollService.partiallyUpdate(id, updatePayRollDto);
+  // }
 
   @Delete('/deleteById/:id') // ----> pending task:perform soft delete
   remove(@Param('id') id: string) {

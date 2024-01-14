@@ -15,11 +15,13 @@ import { Department } from 'src/department/schema/department.schema';
 import moment from 'moment';
 import { memberSelectFields } from 'src/utils/removed_field';
 import { populate } from 'dotenv';
+import { Earnings } from 'src/earnings/schema/earnings.schema';
 
 @Injectable()
 export class PayRollService {
   constructor(
     @InjectModel(PayRoll.name) private readonly payRollModel: Model<PayRoll>,
+    @InjectModel(Earnings.name) private readonly earningsModel: Model<Earnings>,
     @InjectModel(Member.name) private readonly memberModel: Model<Member>,
     @InjectModel(Department.name)
     private readonly departmentModel: Model<Department>,
@@ -31,7 +33,8 @@ export class PayRollService {
       const { member, department } = createPayRollDto;
       // Check if a payroll with the same member ID and month already exists
       const currentMonth = moment().format('MMMM');
-      const currentYear = moment().format('YYYY');
+      const currentYear = parseInt(moment().format('YYYY'), 10);   // Convert year to a number
+
 
       const existingPayRoll = await this.payRollModel
         .findOne({ member, month: currentMonth })
@@ -43,13 +46,18 @@ export class PayRollService {
         );
       }
 
-      // Validate that the referenced Member and Department exist
+      // Validate that the referenced Member exists
       const memberExist = await this.memberModel
-        .findById({ _id: member })
+        .findOne({ _id: member }) // Check if the member exists
         .exec();
 
       if (!memberExist) {
         throw new NotFoundException(`Member with ID ${member} not found`);
+      }
+
+      // Check if the member is deleted
+      if (memberExist.isDeleted) {
+        throw new NotFoundException(`Member with ID ${member} is deleted`);
       }
 
       const departmentExist = await this.departmentModel
@@ -62,8 +70,20 @@ export class PayRollService {
         );
       }
 
-      // Fetch the salary from the member model
-      const memberSalary = memberExist.currentSalary;
+      // Get netSalary from the earning model
+      const netSalaryExist = await this.earningsModel
+        .findOne({ member: member, month: currentMonth })
+        .select('netSalary')
+        .exec();
+
+      // Check if netSalary exists
+      if (!netSalaryExist) {
+        throw new NotFoundException(
+          `Net Salary for the member ID ${member} in month ${currentMonth} has not been generated yet.`,
+        );
+      }
+
+      const memberSalary = netSalaryExist.netSalary;
 
       // Create a new PayRoll instance with the validated data
       const payRoll = await this.payRollModel.create({
@@ -77,28 +97,6 @@ export class PayRollService {
         message: `New payRoll created successfully for member ID ${member} in month ${currentMonth}`,
         data: payRoll,
       };
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-
-  async findAll(): Promise<PayRoll[]> {
-    try {
-      return await this.payRollModel.find().exec();
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-
-  async findOne(id: string): Promise<PayRoll> {
-    try {
-      const payRoll = await this.payRollModel.findById(id).exec();
-      if (!payRoll) {
-        throw new NotFoundException(`PayRoll not found with ID ${id}`);
-      }
-      return payRoll;
     } catch (error) {
       console.error(error);
       throw error;
@@ -200,7 +198,7 @@ export class PayRollService {
           },
         ])
         .exec();
-      const departmentsList = await departmentNames.map((dept) => dept.name);
+      const departmentsList = departmentNames.map((dept) => dept.name);
       return { message: `Departments List`, data: departmentsList };
     } catch (error) {
       console.error(error);
@@ -218,12 +216,38 @@ export class PayRollService {
         );
       }
 
-      const { member: newMemberId, department } = updatePayRollDto;
+      const {
+        member: newMemberId,
+        month,
+        year,
+        netSalary,
+        department,
+      } = updatePayRollDto;
 
       // Check if the memberId is being updated
       if (newMemberId && previousData.member.toString() !== newMemberId) {
         throw new BadRequestException(
           'MemberId cannot be changed. It should remain the same.',
+        );
+      }
+
+      // Check if the month or year is being updat (if provided)
+      if (month && previousData.month !== month) {
+        throw new BadRequestException(
+          'Month cannot be changed. It should remain the same.',
+        );
+      }
+
+      if (year && previousData.year !== year) {
+        throw new BadRequestException(
+          'Year cannot be changed. It should remain the same.',
+        );
+      }
+
+      // Check if the netSalary is being updated
+      if (netSalary && previousData.netSalary !== netSalary) {
+        throw new BadRequestException(
+          'netSalary cannot be changed. It should remain the same.',
         );
       }
 
@@ -238,48 +262,15 @@ export class PayRollService {
       }
 
       // Update the PayRoll instance with the validated data
-      const updatedPayRoll = await this.payRollModel
-        .findByIdAndUpdate(
-          id,
-          {
-            ...updatePayRollDto,
-          },
-          { new: true },
-        )
-        .exec();
+      const updatedPayRoll = Object.assign(previousData, updatePayRollDto);
+      const saveData = await updatedPayRoll.save();
 
-      if (!updatedPayRoll) {
+      if (!saveData) {
         throw new InternalServerErrorException('Error updating payroll');
       }
 
       return {
         message: `PayRoll with ID ${id} updated successfully`,
-        data: updatedPayRoll,
-      };
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }
-
-  async partiallyUpdate(
-    id: string,
-    partialUpdateDto: Partial<UpdatePayRollDto>,
-  ) {
-
-    //here we are not set any check for duplication so use above update api
-    try {
-      const existingPayRoll = await this.payRollModel.findById(id).exec();
-
-      if (!existingPayRoll) {
-        throw new NotFoundException('PayRoll not found');
-      }
-
-      const updatedPayRoll = Object.assign(existingPayRoll, partialUpdateDto);
-      const saveData = await updatedPayRoll.save();
-
-      return {
-        message: `PayRoll with ID ${id} partially-updated successfully`,
         data: saveData,
       };
     } catch (error) {

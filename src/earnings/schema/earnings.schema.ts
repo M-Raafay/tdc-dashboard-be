@@ -2,6 +2,7 @@
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { Project } from 'src/projects/schema/projects.schema';
 
 @Schema({ timestamps: true })
 export class Earnings extends Document {
@@ -27,14 +28,19 @@ export class Earnings extends Document {
   @Prop({ required: true })
   currentSalary: number; // will get from the member table
 
-  // @Prop()
-  // overtimeRate: number;
+ 
 
-  @Prop({ required: true })
-  projectsAssigned: string[]; // Array of Project IDs assigned to the member, will get from projects model against a member id
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project', default: null }] })
+  projectsAssigned: Project[]; 
+  
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project', default: null }] })
+  projectsWorkedOn: Project[]; 
 
-  @Prop({ required: true })
-  projectsWorkedOn: string[]; // Array of Project IDs assigned to the member, , will get from projects model against a member id
+  // @Prop({ required: true })
+  // projectsAssigned: string[]; // Array of Project IDs assigned to the member, will get from projects model against a member id
+
+  // @Prop({ required: true })
+  // projectsWorkedOn: string[]; // Array of Project IDs assigned to the member, , will get from projects model against a member id
   // Additional fields
 
   @Prop({ required: true })
@@ -57,10 +63,6 @@ export class Earnings extends Document {
 
   @Prop({ required: true, default: 0 })
   netSalary: number; //we will calculate
-
-  // // Timestamps
-  // createdAt: Date;
-  // updatedAt: Date;
 }
 
 export const EarningsSchema = SchemaFactory.createForClass(Earnings);

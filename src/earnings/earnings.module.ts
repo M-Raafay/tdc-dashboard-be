@@ -9,6 +9,8 @@ import { MemberSchema } from 'src/members/schema/members.schema';
 import { PayrollSchema } from 'src/pay-roll/schema/Payroll.schema';
 import { ConfigModule } from '@nestjs/config';
 import { EarningsSchema } from './schema/earnings.schema';
+import { ProjectSchema } from 'src/projects/schema/projects.schema';
+import { TeamsSchema } from 'src/teams/schema/teams.schema';
 
 @Module({
   imports: [
@@ -17,9 +19,11 @@ import { EarningsSchema } from './schema/earnings.schema';
     ConfigModule,
     MongooseModule.forFeature([
       { name: 'PayRoll', schema: PayrollSchema },
+      { name: 'Earnings', schema: EarningsSchema },
       { name: 'Department', schema: DepartmentSchema },
       { name: 'Member', schema: MemberSchema },
-      { name: 'Earnings', schema: EarningsSchema },
+      { name: 'Project', schema: ProjectSchema },
+      { name: 'Teams', schema: TeamsSchema },
     ]),
   ],
   controllers: [EarningsController],

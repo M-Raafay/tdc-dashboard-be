@@ -36,6 +36,16 @@ export class UpdatePayRollDto extends PartialType(CreatePayRollDto) {
   @IsNotEmpty()
   @IsNumber()
   netSalary?: number;
+ 
+  @IsOptional()
+  @IsNotEmpty()
+  @IsString()
+  month?: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsNumber()
+  year?: number;
 
   @IsMongoId()
   @IsOptional()

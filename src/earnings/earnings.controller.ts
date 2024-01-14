@@ -20,30 +20,27 @@ export class EarningsController {
   constructor(private readonly earningsService: EarningsService) {}
 
   @Post('create')
-  create(@Body() createEarningDto: CreateEarningDto): Promise<Earnings> {
+  create(@Body() createEarningDto: CreateEarningDto) {
     return this.earningsService.create(createEarningDto);
   }
 
   @Get('getAll')
-  findAll(): Promise<Earnings[]> {
+  findAll() {
     return this.earningsService.findAll();
   }
 
   @Get('getById/:id')
-  findById(@Param('id') id: string): Promise<Earnings | null> {
+  findById(@Param('id') id: string) {
     return this.earningsService.findById(id);
   }
 
   @Patch('updateById/:id')
-  update(
-    @Param('id') id: string,
-    @Body() updateEarningDto: UpdateEarningDto,
-  ): Promise<Earnings | null> {
+  update(@Param('id') id: string, @Body() updateEarningDto: UpdateEarningDto) {
     return this.earningsService.update(id, updateEarningDto);
   }
 
   @Delete('deleteById/:id')
-  delete(@Param('id') id: string): Promise<Earnings | null> {
+  delete(@Param('id') id: string) {
     return this.earningsService.delete(id);
   }
 }

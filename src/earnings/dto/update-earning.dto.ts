@@ -1,9 +1,25 @@
 // src/earnings/update-earnings.dto.ts
 import { PartialType } from '@nestjs/swagger';
 import { CreateEarningDto } from './create-earning.dto';
-import { IsOptional, IsNumber, IsArray } from 'class-validator';
+import {
+  IsOptional,
+  IsNumber,
+  IsArray,
+  IsNotEmpty,
+  IsString,
+} from 'class-validator';
 
 export class UpdateEarningDto extends PartialType(CreateEarningDto) {
+  // @IsOptional()
+  // @IsNotEmpty()
+  // @IsString()
+  // month?: string;
+
+  // @IsOptional()
+  // @IsNotEmpty()
+  // @IsNumber()
+  // year?: number;
+
   @IsOptional()
   @IsNumber()
   totalOvertimeHours?: number;
@@ -12,17 +28,13 @@ export class UpdateEarningDto extends PartialType(CreateEarningDto) {
   @IsNumber()
   totalUnderTimeHours?: number;
 
-  @IsOptional()
-  @IsArray()
-  projectsAssigned?: string[];
-
-  @IsOptional()
-  @IsArray()
-  projectsWorkedOn?: string[];
+  // @IsOptional()
+  // @IsArray()
+  // projectsAssigned?: string[];
 
   // @IsOptional()
-  // @IsNumber()
-  // readonly contractedHours?: number;
+  // @IsArray()
+  // projectsWorkedOn?: string[];
 
   @IsOptional()
   @IsNumber()

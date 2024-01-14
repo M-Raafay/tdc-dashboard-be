@@ -7,6 +7,7 @@ import { DepartmentModule } from 'src/department/department.module';
 import { PayRollService } from './pay-roll.service';
 import { PayRollController } from './pay-roll.controller';
 import { PayrollSchema } from './schema/Payroll.schema';
+import { EarningsSchema } from 'src/earnings/schema/earnings.schema';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PayrollSchema } from './schema/Payroll.schema';
       { name: 'PayRoll', schema: PayrollSchema },
       { name: 'Department', schema: DepartmentSchema },
       { name: 'Member', schema: MemberSchema },
+      { name: 'Earnings', schema: EarningsSchema },
     ]),
   ],
 
