@@ -30,25 +30,12 @@ export class PayRollService {
 
   async create(createPayRollDto: CreatePayRollDto) {
     try {
-      const { member, department } = createPayRollDto;
-      // Check if a payroll with the same member ID and month already exists
-      const currentMonth = moment().format('MMMM');
-      const currentYear = parseInt(moment().format('YYYY'), 10);   // Convert year to a number
-
-
-      const existingPayRoll = await this.payRollModel
-        .findOne({ member, month: currentMonth })
-        .exec();
-
-      if (existingPayRoll) {
-        throw new ConflictException(
-          `PayRoll for Member with ID ${member} in the current month already exists`,
-        );
-      }
+      // const { member, department } = createPayRollDto;
+      const { member } = createPayRollDto;
 
       // Validate that the referenced Member exists
       const memberExist = await this.memberModel
-        .findOne({ _id: member }) // Check if the member exists
+        .findById({ _id: member })
         .exec();
 
       if (!memberExist) {
@@ -60,15 +47,53 @@ export class PayRollService {
         throw new NotFoundException(`Member with ID ${member} is deleted`);
       }
 
-      const departmentExist = await this.departmentModel
-        .findById({ _id: department })
-        .exec();
+      // Automatically fetch the department associated with the member
+      const department = memberExist.department;
 
-      if (!departmentExist) {
+      // Validate that the associated Department exists
+      if (!department) {
         throw new NotFoundException(
-          `Department with ID ${department} not found`,
+          `Department not found for the provided member`,
         );
       }
+
+      // Check if a payroll with the same member ID and month already exists
+      const currentMonth = moment().format('MMMM');
+      const currentYear = parseInt(moment().format('YYYY'), 10); // Convert year to a number
+
+      const existingPayRoll = await this.payRollModel
+        .findOne({ member, month: currentMonth })
+        .exec();
+
+      if (existingPayRoll) {
+        throw new ConflictException(
+          `PayRoll for Member with ID ${member} in the current month already exists`,
+        );
+      }
+
+      // // Validate that the referenced Member exists
+      // const memberExist = await this.memberModel
+      //   .findOne({ _id: member }) // Check if the member exists
+      //   .exec();
+
+      // if (!memberExist) {
+      //   throw new NotFoundException(`Member with ID ${member} not found`);
+      // }
+
+      // // Check if the member is deleted
+      // if (memberExist.isDeleted) {
+      //   throw new NotFoundException(`Member with ID ${member} is deleted`);
+      // }
+
+      // const departmentExist = await this.departmentModel
+      //   .findById({ _id: department })
+      //   .exec();
+
+      // if (!departmentExist) {
+      //   throw new NotFoundException(
+      //     `Department with ID ${department} not found`,
+      //   );
+      // }
 
       // Get netSalary from the earning model
       const netSalaryExist = await this.earningsModel
@@ -88,6 +113,7 @@ export class PayRollService {
       // Create a new PayRoll instance with the validated data
       const payRoll = await this.payRollModel.create({
         ...createPayRollDto,
+        department,
         netSalary: memberSalary, // Set the netSalary based on the member's current salary
         month: currentMonth,
         year: currentYear,
@@ -216,50 +242,42 @@ export class PayRollService {
         );
       }
 
-      const {
-        member: newMemberId,
-        month,
-        year,
-        netSalary,
-        department,
-      } = updatePayRollDto;
+      // // Check if the memberId is being updated
+      // if (newMemberId && previousData.member.toString() !== newMemberId) {
+      //   throw new BadRequestException(
+      //     'MemberId cannot be changed. It should remain the same.',
+      //   );
+      // }
 
-      // Check if the memberId is being updated
-      if (newMemberId && previousData.member.toString() !== newMemberId) {
-        throw new BadRequestException(
-          'MemberId cannot be changed. It should remain the same.',
-        );
-      }
+      // // Check if the month or year is being updat (if provided)
+      // if (month && previousData.month !== month) {
+      //   throw new BadRequestException(
+      //     'Month cannot be changed. It should remain the same.',
+      //   );
+      // }
 
-      // Check if the month or year is being updat (if provided)
-      if (month && previousData.month !== month) {
-        throw new BadRequestException(
-          'Month cannot be changed. It should remain the same.',
-        );
-      }
+      // if (year && previousData.year !== year) {
+      //   throw new BadRequestException(
+      //     'Year cannot be changed. It should remain the same.',
+      //   );
+      // }
 
-      if (year && previousData.year !== year) {
-        throw new BadRequestException(
-          'Year cannot be changed. It should remain the same.',
-        );
-      }
+      // // Check if the netSalary is being updated
+      // if (netSalary && previousData.netSalary !== netSalary) {
+      //   throw new BadRequestException(
+      //     'netSalary cannot be changed. It should remain the same.',
+      //   );
+      // }
 
-      // Check if the netSalary is being updated
-      if (netSalary && previousData.netSalary !== netSalary) {
-        throw new BadRequestException(
-          'netSalary cannot be changed. It should remain the same.',
-        );
-      }
-
-      // Validate that the referenced Department exists
-      const departmentExists = await this.departmentModel
-        .findById(department)
-        .exec();
-      if (!departmentExists) {
-        throw new NotFoundException(
-          `Department with ID ${department} not found`,
-        );
-      }
+      // // Validate that the referenced Department exists
+      // const departmentExists = await this.departmentModel
+      //   .findById(department)
+      //   .exec();
+      // if (!departmentExists) {
+      //   throw new NotFoundException(
+      //     `Department with ID ${department} not found`,
+      //   );
+      // }
 
       // Update the PayRoll instance with the validated data
       const updatedPayRoll = Object.assign(previousData, updatePayRollDto);

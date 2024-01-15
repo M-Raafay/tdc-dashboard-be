@@ -12,9 +12,9 @@ import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { CreatePayRollDto } from './create-pay-roll.dto';
 
 export class UpdatePayRollDto extends PartialType(CreatePayRollDto) {
-  @IsMongoId()
-  @IsOptional()
-  member?: string;
+  // @IsMongoId()
+  // @IsOptional()
+  // member?: string;
 
   @IsOptional()
   @IsNotEmpty()
@@ -32,22 +32,22 @@ export class UpdatePayRollDto extends PartialType(CreatePayRollDto) {
   @IsString()
   accountNo?: string;
 
-  @IsOptional()
-  @IsNotEmpty()
-  @IsNumber()
-  netSalary?: number;
+  // @IsOptional()
+  // @IsNotEmpty()
+  // @IsNumber()
+  // netSalary?: number;
  
-  @IsOptional()
-  @IsNotEmpty()
-  @IsString()
-  month?: string;
+  // @IsOptional()
+  // @IsNotEmpty()
+  // @IsString()
+  // month?: string;
 
-  @IsOptional()
-  @IsNotEmpty()
-  @IsNumber()
-  year?: number;
+  // @IsOptional()
+  // @IsNotEmpty()
+  // @IsNumber()
+  // year?: number;
 
-  @IsMongoId()
-  @IsOptional()
-  department?: string;
+  // @IsMongoId()
+  // @IsOptional()
+  // department?: string;
 }

@@ -41,9 +41,29 @@ export class EarningsService {
     createEarningDto: CreateEarningDto,
   ): Promise<{ message: string; data: Earnings }> {
     try {
-      const { member, department } = createEarningDto;
+      // const { member, department } = createEarningDto;
+      // // Validate that the referenced Member and Department exist
+      // const memberExist = await this.memberModel
+      //   .findById({ _id: member })
+      //   .exec();
 
-      // Validate that the referenced Member and Department exist
+      // if (!memberExist) {
+      //   throw new NotFoundException(`Member with ID ${member} not found`);
+      // }
+
+      // const departmentExist = await this.departmentModel
+      //   .findById({ _id: department })
+      //   .exec();
+
+      // if (!departmentExist) {
+      //   throw new NotFoundException(
+      //     `Department with ID ${department} not found`,
+      //   );
+      // }
+
+      const { member } = createEarningDto;
+
+      // Validate that the referenced Member exists
       const memberExist = await this.memberModel
         .findById({ _id: member })
         .exec();
@@ -52,13 +72,13 @@ export class EarningsService {
         throw new NotFoundException(`Member with ID ${member} not found`);
       }
 
-      const departmentExist = await this.departmentModel
-        .findById({ _id: department })
-        .exec();
+      // Automatically fetch the department associated with the member
+      const department = memberExist.department;
 
-      if (!departmentExist) {
+      // Validate that the associated Department exists
+      if (!department) {
         throw new NotFoundException(
-          `Department with ID ${department} not found`,
+          `Department not found for the provided member`,
         );
       }
 
@@ -66,8 +86,8 @@ export class EarningsService {
       const month = currentMonth;
       const currentYear = parseInt(moment().format('YYYY'), 10); // Convert year to a number
       const year = currentYear;
-      console.log('month: ',month);
-      console.log('year: ',year);
+      console.log('month: ', month);
+      console.log('year: ', year);
 
       // Fetch the salary from the member model
       const memberExistSalary = await this.memberModel
@@ -200,6 +220,7 @@ export class EarningsService {
 
       const createdEarnings = await (
         await this.earningsModel.create({
+          department,
           month,
           year,
           contractedHours,
@@ -353,8 +374,8 @@ export class EarningsService {
         throw new BadRequestException('Invalid values for calculated fields');
       }
 
-      const { member: newMemberId, department } = updateEarningDto;
-
+      const { member } = updateEarningDto;
+      const newMemberId = member;
       const currentMonth = moment().format('MMMM');
       const month = currentMonth;
       const currentYear = parseInt(moment().format('YYYY'), 10); // Convert year to a number
@@ -380,19 +401,27 @@ export class EarningsService {
         );
       }
 
-      // Validate that the referenced Department exists
-      const departmentExists = await this.departmentModel
-        .findById(department)
+      // Validate that the referenced Member exists
+      const memberExist = await this.memberModel
+        .findById({ _id: member })
         .exec();
-      if (!departmentExists) {
+      if (!memberExist) {
+        throw new NotFoundException(`Member with ID ${member} not found`);
+      }
+
+      // Automatically fetch the department associated with the member
+      const department = memberExist.department;
+      // Validate that the associated Department exists
+      if (!department) {
         throw new NotFoundException(
-          `Department with ID ${department} not found`,
+          `Department not found for the provided member`,
         );
       }
 
       // Update the Earnings instance with the validated data
       const updatedEarning = Object.assign(existingEarnings, {
         ...updateEarningDto,
+        department,
         totalWorkedHours,
         totalEarnings,
         netSalary,
@@ -419,9 +448,14 @@ export class EarningsService {
         );
 
         if (!payRollUpdate) {
-          throw new NotFoundException(
+          // PayRoll document not found, handle it accordingly
+          console.log(
             `PayRoll not found for member ID ${saveData.member} in month ${saveData.month} and year ${saveData.year}`,
           );
+          // You can choose to throw an exception or perform other actions
+          // throw new NotFoundException(
+          //   `PayRoll not found for member ID ${saveData.member} in month ${saveData.month} and year ${saveData.year}`,
+          // );
         }
       }
 

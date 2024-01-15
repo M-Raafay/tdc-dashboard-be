@@ -28,7 +28,7 @@ export class CreatePayRollDto {
   @IsString()
   accountNo: string;
 
-  @IsNotEmpty()
-  @IsString()
-  department: string; // Assuming the department ID will be sent as a string
+  // @IsNotEmpty()
+  // @IsString()
+  // department: string; // Assuming the department ID will be sent as a string
 }

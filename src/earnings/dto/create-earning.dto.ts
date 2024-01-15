@@ -13,10 +13,6 @@ export class CreateEarningDto {
   @IsString()
   member: string;
 
-  @IsNotEmpty()
-  @IsString()
-  department: string;
-
   @IsOptional()
   @IsNumber()
   totalOvertimeHours: number; //after we will get data from clockify api and will calculate
@@ -25,13 +21,17 @@ export class CreateEarningDto {
   @IsNumber()
   totalUnderTimeHours: number; //after we will get data from clockify api and will calculate
 
-  // @IsArray()
-  // projectsAssigned: string[];
-
   @IsArray()
   projectsWorkedOn: string[];
 
   @IsOptional()
   @IsNumber()
   totalDeductions: number;
+
+  // @IsNotEmpty()
+  // @IsString()
+  // department: string;
+
+  // @IsArray()
+  // projectsAssigned: string[];
 }

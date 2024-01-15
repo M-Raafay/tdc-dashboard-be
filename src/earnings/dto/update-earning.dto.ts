@@ -10,6 +10,18 @@ import {
 } from 'class-validator';
 
 export class UpdateEarningDto extends PartialType(CreateEarningDto) {
+  @IsOptional()
+  @IsNumber()
+  totalOvertimeHours?: number;
+
+  @IsOptional()
+  @IsNumber()
+  totalUnderTimeHours?: number;
+
+  @IsOptional()
+  @IsNumber()
+  totalDeductions?: number;
+
   // @IsOptional()
   // @IsNotEmpty()
   // @IsString()
@@ -20,13 +32,9 @@ export class UpdateEarningDto extends PartialType(CreateEarningDto) {
   // @IsNumber()
   // year?: number;
 
-  @IsOptional()
-  @IsNumber()
-  totalOvertimeHours?: number;
-
-  @IsOptional()
-  @IsNumber()
-  totalUnderTimeHours?: number;
+  // @IsNotEmpty()
+  // @IsString()
+  // department?: string;
 
   // @IsOptional()
   // @IsArray()
@@ -35,8 +43,4 @@ export class UpdateEarningDto extends PartialType(CreateEarningDto) {
   // @IsOptional()
   // @IsArray()
   // projectsWorkedOn?: string[];
-
-  @IsOptional()
-  @IsNumber()
-  totalDeductions?: number;
 }
