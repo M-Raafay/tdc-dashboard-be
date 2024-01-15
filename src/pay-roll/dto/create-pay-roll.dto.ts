@@ -1,4 +1,3 @@
-// export class CreatePayRollDto {}
 // payroll.dto.ts
 import {
   IsNotEmpty,
@@ -12,7 +11,7 @@ import {
 export class CreatePayRollDto {
   @IsNotEmpty()
   @IsString()
-  member: string; // Assuming the member ID will be sent as a string
+  member: string;
 
   @IsNotEmpty()
   @IsString()
@@ -27,8 +26,4 @@ export class CreatePayRollDto {
   @IsNotEmpty()
   @IsString()
   accountNo: string;
-
-  // @IsNotEmpty()
-  // @IsString()
-  // department: string; // Assuming the department ID will be sent as a string
 }

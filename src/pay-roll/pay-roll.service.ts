@@ -71,30 +71,6 @@ export class PayRollService {
         );
       }
 
-      // // Validate that the referenced Member exists
-      // const memberExist = await this.memberModel
-      //   .findOne({ _id: member }) // Check if the member exists
-      //   .exec();
-
-      // if (!memberExist) {
-      //   throw new NotFoundException(`Member with ID ${member} not found`);
-      // }
-
-      // // Check if the member is deleted
-      // if (memberExist.isDeleted) {
-      //   throw new NotFoundException(`Member with ID ${member} is deleted`);
-      // }
-
-      // const departmentExist = await this.departmentModel
-      //   .findById({ _id: department })
-      //   .exec();
-
-      // if (!departmentExist) {
-      //   throw new NotFoundException(
-      //     `Department with ID ${department} not found`,
-      //   );
-      // }
-
       // Get netSalary from the earning model
       const netSalaryExist = await this.earningsModel
         .findOne({ member: member, month: currentMonth })
@@ -242,43 +218,6 @@ export class PayRollService {
         );
       }
 
-      // // Check if the memberId is being updated
-      // if (newMemberId && previousData.member.toString() !== newMemberId) {
-      //   throw new BadRequestException(
-      //     'MemberId cannot be changed. It should remain the same.',
-      //   );
-      // }
-
-      // // Check if the month or year is being updat (if provided)
-      // if (month && previousData.month !== month) {
-      //   throw new BadRequestException(
-      //     'Month cannot be changed. It should remain the same.',
-      //   );
-      // }
-
-      // if (year && previousData.year !== year) {
-      //   throw new BadRequestException(
-      //     'Year cannot be changed. It should remain the same.',
-      //   );
-      // }
-
-      // // Check if the netSalary is being updated
-      // if (netSalary && previousData.netSalary !== netSalary) {
-      //   throw new BadRequestException(
-      //     'netSalary cannot be changed. It should remain the same.',
-      //   );
-      // }
-
-      // // Validate that the referenced Department exists
-      // const departmentExists = await this.departmentModel
-      //   .findById(department)
-      //   .exec();
-      // if (!departmentExists) {
-      //   throw new NotFoundException(
-      //     `Department with ID ${department} not found`,
-      //   );
-      // }
-
       // Update the PayRoll instance with the validated data
       const updatedPayRoll = Object.assign(previousData, updatePayRollDto);
       const saveData = await updatedPayRoll.save();
@@ -297,7 +236,7 @@ export class PayRollService {
     }
   }
 
-  //TodoTask: in memmber when you remove member than you also handle there to remove the payroll link with that member ---> status:done
+  //TodoTask: in memmber when you remove member than you also handle there to remove the payroll link with that member ---> status:discussion pending on it
   async remove(id: string) {
     try {
       const deletedPayRoll = await this.payRollModel
@@ -313,149 +252,7 @@ export class PayRollService {
     }
   }
 
-  // async createAllPayrollsForCurrentMonth() {
-  //   try {
-  //     // Get all existing members
-  //     const members = await this.memberModel.find().exec();
-  //     // Check if today is the current month or the next month
-
-  //     // Check if a payroll with the same member ID and month already exists
-  //     const currentMonth = moment().format('MMMM');
-  //     const currentYear = moment().format('YYYY');
-
-  //     // Loop through all members and create payrolls for the current month
-  //     const payrolls = await Promise.all(
-  //       members.map(async (member: any) => {
-  //         // Check if a payroll for the member and current month already exists
-  //         const existingPayroll = await this.payRollModel
-  //           .findOne({ member: member._id, month: currentMonth })
-  //           .exec();
-  //         if (existingPayroll) {
-  //           console.log(
-  //             `PayRoll for Member with ID ${member._id} in ${currentMonth} already exists`,
-  //           );
-  //           return existingPayroll;
-  //         }
-
-  //         // Validate that the referenced Department exists
-  //         const departmentExist = await this.departmentModel
-  //           .findById({ _id: member.department })
-  //           .exec();
-  //         if (!departmentExist) {
-  //           console.log(
-  //             `Department with ID ${member.department} not found for Member with ID ${member._id}`,
-  //           );
-  //           return null;
-  //         }
-
-  //         // Check if the member is not deleted
-  //         if (member.isDeleted === true) {
-  //           console.log(
-  //             `Member with ID ${member._id} is marked as deleted. Skipping payroll creation.`,
-  //           );
-  //           return null;
-  //         }
-
-  //         // Get the last payroll for the member to retrieve the previous salary
-  //         const lastPayroll: any = await this.payRollModel
-  //           .findOne({ member: member._id })
-  //           .sort({ _id: -1 }) // Sort in descending order based on _id to get the latest payroll
-  //           .exec();
-
-  //         // Create a new PayRoll instance for the member and current month
-  //         return this.payRollModel.create({
-  //           member: member._id,
-  //           department: member.department,
-  //           accountTitle: member.accountTitle,
-  //           cnic: member.cnic,
-  //           accountNo: member.accountNo,
-  //           netSalary: lastPayroll.netSalary ? lastPayroll.netSalary : 0, // Use the previous month's salary if available, otherwise set a default
-  //           month: currentMonth,
-  //           year: currentYear,
-  //         });
-  //       }),
-  //     );
-
-  //     // Filter out null values from the results (due to department validation failures)
-  //     const createdPayrolls = payrolls.filter((p) => p !== null);
-
-  //     return {
-  //       message: `New payrolls created successfully for ${createdPayrolls.length} members in ${currentMonth}`,
-  //       data: createdPayrolls,
-  //     };
-  //   } catch (error) {
-  //     console.error(error);
-  //     throw error;
-  //   }
-  // }
-
-  // async createAllPayrollsForPreviousMonth() {
-  //   try {
-  //     // Get the current date, month, and year
-  //     const currentDate = moment().date();
-  //     const currentMonth = moment().format('MMMM');
-  //     const currentYear = moment().format('YYYY');
-
-  //     // Calculate the previous month
-  //     const previousMonth = moment().subtract(1, 'months').format('MMMM');
-  //     const previousYear = moment().subtract(1, 'months').format('YYYY');
-
-  //     // Check if today is between the 28th and 31st day
-  //     const isWithinValidDateRange = currentDate >= 28 && currentDate <= 31;
-
-  //     if (!isWithinValidDateRange) {
-  //       throw new Error('Invalid date. Payrolls can only be created between the 28th and 31st day of each month.');
-  //     }
-
-  //     // Get all existing payrolls for the previous month
-  //     const existingPayrollsForPreviousMonth = await this.payRollModel
-  //       .find({ month: previousMonth, year: previousYear })
-  //       .exec();
-
-  //     // Loop through existing payrolls for the previous month and create payrolls for the current month
-  //     const payrollsForCurrentMonth = await Promise.all(
-  //       existingPayrollsForPreviousMonth.map(async (existingPayroll: any) => {
-  //         // Check if a payroll for the member and current month already exists
-  //         const existingCurrentMonthPayroll = await this.payRollModel
-  //           .findOne({
-  //             member: existingPayroll.member,
-  //             month: currentMonth,
-  //             year: currentYear, // Assuming you also store the year in the PayRoll model
-  //           })
-  //           .exec();
-
-  //         if (existingCurrentMonthPayroll) {
-  //           console.log(
-  //             `PayRoll for Member with ID ${existingPayroll.member} in ${currentMonth} already exists`,
-  //           );
-  //           return existingCurrentMonthPayroll;
-  //         }
-
-  //         // Create a new PayRoll instance for the member and current month
-  //         return this.payRollModel.create({
-  //           member: existingPayroll.member,
-  //           department: existingPayroll.department,
-  //           accountTitle: existingPayroll.accountTitle,
-  //           cnic: existingPayroll.cnic,
-  //           accountNo: existingPayroll.accountNo,
-  //           netSalary: existingPayroll.netSalary ? existingPayroll.netSalary : 0,
-  //           month: currentMonth,
-  //           year: currentYear, // Assuming you also store the year in the PayRoll model
-  //         });
-  //       }),
-  //     );
-
-  //     return {
-  //       message: `New payrolls created successfully for ${payrollsForCurrentMonth.length} members in ${currentMonth}`,
-  //       data: payrollsForCurrentMonth,
-  //     };
-  //   } catch (error) {
-  //     console.error(error);
-  //     throw error;
-  //   }
-  // }
-
-  //Extra Tasks -----> Staus:Pending
+  //Extra Tasks: createAllPayrollsForCurrentMonth by one click for one member-----> Staus:Pending,bugs resolving
   async createPayrollsBasedOnSelectedDate() {
     try {
       // Get the selected date

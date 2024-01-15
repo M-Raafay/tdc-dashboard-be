@@ -9,12 +9,17 @@ import {
   Put,
   Delete,
   Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { EarningsService } from './earnings.service';
-import { Earnings } from './schema/earnings.schema';
 import { CreateEarningDto } from './dto/create-earning.dto';
 import { UpdateEarningDto } from './dto/update-earning.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Role } from 'src/members/schema/members.schema';
+import { Roles } from 'src/roles/role.decorator';
 
+@UseGuards(JwtAuthGuard)
+@Roles(Role.SUPERADMIN, Role.HR, Role.ADMIN)
 @Controller('earnings')
 export class EarningsController {
   constructor(private readonly earningsService: EarningsService) {}

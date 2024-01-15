@@ -22,26 +22,4 @@ export class UpdateEarningDto {
   @IsOptional()
   @IsNumber()
   totalDeductions?: number;
-
-  // @IsOptional()
-  // @IsNotEmpty()
-  // @IsString()
-  // month?: string;
-
-  // @IsOptional()
-  // @IsNotEmpty()
-  // @IsNumber()
-  // year?: number;
-
-  // @IsNotEmpty()
-  // @IsString()
-  // department?: string;
-
-  // @IsOptional()
-  // @IsArray()
-  // projectsAssigned?: string[];
-
-  // @IsOptional()
-  // @IsArray()
-  // projectsWorkedOn?: string[];
 }

@@ -27,23 +27,20 @@ export class Earnings extends Document {
 
   @Prop({ required: true })
   currentSalary: number; // will get from the member table
-  
 
- 
+  @Prop({
+    type: [
+      { type: mongoose.Schema.Types.ObjectId, ref: 'Project', default: null },
+    ],
+  })
+  projectsAssigned: Project[];
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project', default: null }] })
-  projectsAssigned: Project[]; 
-  
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project', default: null }] })
-  projectsWorkedOn: Project[]; 
-
-  // @Prop({ required: true })
-  // projectsAssigned: string[]; // Array of Project IDs assigned to the member, will get from projects model against a member id
-
-  // @Prop({ required: true })
-  // projectsWorkedOn: string[]; // Array of Project IDs assigned to the member, , will get from projects model against a member id
-  // Additional fields
-
+  @Prop({
+    type: [
+      { type: mongoose.Schema.Types.ObjectId, ref: 'Project', default: null },
+    ],
+  })
+  projectsWorkedOn: Project[];
 
   @Prop({ required: true })
   contractedHours: number; // will get from env file

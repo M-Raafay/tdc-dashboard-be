@@ -58,14 +58,6 @@ export class PayRollController {
     return this.payRollService.update(id, updatePayRollDto);
   }
 
-  // @Patch('/partiallyUpdateById/:id')
-  // partiallyUpdate(
-  //   @Param('id') id: string,
-  //   @Body() updatePayRollDto: UpdatePayRollDto,
-  // ) {
-  //   return this.payRollService.partiallyUpdate(id, updatePayRollDto);
-  // }
-
   @Delete('/deleteById/:id') // ----> pending task:perform soft delete
   remove(@Param('id') id: string) {
     return this.payRollService.remove(id);

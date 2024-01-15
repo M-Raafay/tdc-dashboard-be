@@ -8,15 +8,10 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { CreatePayRollDto } from './create-pay-roll.dto';
 
 // export class UpdatePayRollDto extends PartialType(CreatePayRollDto) {
 export class UpdatePayRollDto {
-  // @IsMongoId()
-  // @IsOptional()
-  // member?: string;
-
   @IsOptional()
   @IsNotEmpty()
   @IsString()
@@ -32,23 +27,4 @@ export class UpdatePayRollDto {
   @IsNotEmpty()
   @IsString()
   accountNo?: string;
-
-  // @IsOptional()
-  // @IsNotEmpty()
-  // @IsNumber()
-  // netSalary?: number;
-
-  // @IsOptional()
-  // @IsNotEmpty()
-  // @IsString()
-  // month?: string;
-
-  // @IsOptional()
-  // @IsNotEmpty()
-  // @IsNumber()
-  // year?: number;
-
-  // @IsMongoId()
-  // @IsOptional()
-  // department?: string;
 }

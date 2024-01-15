@@ -18,10 +18,6 @@ import { Department } from 'src/department/schema/department.schema';
 import { Project } from 'src/projects/schema/projects.schema';
 import { Teams } from 'src/teams/schema/teams.schema';
 import { PayRoll } from 'src/pay-roll/schema/Payroll.schema';
-import {
-  departmentRemovedFields,
-  memberSelectFields,
-} from 'src/utils/removed_field';
 import moment from 'moment';
 
 @Injectable()
@@ -30,7 +26,6 @@ export class EarningsService {
     @InjectModel('Earnings') private readonly earningsModel: Model<Earnings>,
     @InjectModel('PayRoll') private payRollmodel: Model<PayRoll>,
     @InjectModel('Member') private readonly memberModel: Model<Member>,
-    @InjectModel('Department') private departmentModel: Model<Department>,
     @InjectModel('Project') private projectModel: Model<Project>,
     @InjectModel('Teams') private teamsModel: Model<Teams>,
     private configService: ConfigService,
@@ -41,26 +36,6 @@ export class EarningsService {
     createEarningDto: CreateEarningDto,
   ): Promise<{ message: string; data: Earnings }> {
     try {
-      // const { member, department } = createEarningDto;
-      // // Validate that the referenced Member and Department exist
-      // const memberExist = await this.memberModel
-      //   .findById({ _id: member })
-      //   .exec();
-
-      // if (!memberExist) {
-      //   throw new NotFoundException(`Member with ID ${member} not found`);
-      // }
-
-      // const departmentExist = await this.departmentModel
-      //   .findById({ _id: department })
-      //   .exec();
-
-      // if (!departmentExist) {
-      //   throw new NotFoundException(
-      //     `Department with ID ${department} not found`,
-      //   );
-      // }
-
       const { member } = createEarningDto;
 
       // Validate that the referenced Member exists
@@ -86,8 +61,6 @@ export class EarningsService {
       const month = currentMonth;
       const currentYear = parseInt(moment().format('YYYY'), 10); // Convert year to a number
       const year = currentYear;
-      console.log('month: ', month);
-      console.log('year: ', year);
 
       // Fetch the salary from the member model
       const memberExistSalary = await this.memberModel
@@ -101,18 +74,10 @@ export class EarningsService {
       // Now, you can access the salary from the fetched member
       const currentSalary = memberExistSalary.currentSalary;
 
-      console.log('currentSalary: ', currentSalary);
-
       // get contractedHours from env file
       const contractedHours = parseInt(
         this.configService.get('CONTRACTED_HOURS'),
         10,
-      );
-      console.log(
-        'contractedHours:   ',
-        typeof contractedHours,
-        '    ',
-        contractedHours,
       );
 
       let totalWorkedHours: number;
@@ -132,35 +97,24 @@ export class EarningsService {
       else {
         totalWorkedHours = contractedHours;
       }
-      console.log('totalWorkedHours:   ', totalWorkedHours);
 
       const perHourRate = Math.round(currentSalary / contractedHours);
-      console.log('perHourRate:   ', typeof perHourRate);
 
       const totalEarnings = Math.round(perHourRate * totalWorkedHours);
-      console.log(
-        'totalEarnings:   ',
-        typeof totalEarnings,
-        '   ',
-        totalEarnings,
-      );
 
       const netSalary = Math.round(
         totalEarnings - createEarningDto.totalDeductions,
       );
-      console.log('netSalary:   ', typeof netSalary);
       // Validation: Invalid values for calculated fields
       if (totalWorkedHours < 0 || totalEarnings < 0 || netSalary < 0) {
         throw new BadRequestException('Invalid values for calculated fields');
       }
-      console.log('test');
       // Check if earning for this month already exists
       const existingEarning = await this.earningsModel.findOne({
         member: createEarningDto.member,
         month: month,
         year: year,
       });
-      console.log('test');
 
       if (existingEarning) {
         throw new ConflictException(
@@ -179,7 +133,6 @@ export class EarningsService {
 
       // Extract project IDs and assigned team IDs
       const projectIds = assignedProjects.map((project) => project._id); // it is simple because we are running on projects ,odel collection in db
-      console.log('projectIds:   ', projectIds);
 
       // Find teams where any of the member IDs exist in the members array
       const teamsWithMembers = await this.teamsModel
@@ -197,26 +150,19 @@ export class EarningsService {
           teams_assigned: { $in: teamIds },
         })
         .select('name');
-      console.log('projectsOfMembers:   ', projectsOfMembers);
 
       // Extract project IDs and assigned team IDs
       const projectIdsfromTeamModel = projectsOfMembers.map(
         (project) => project._id,
       ); // it is simple because we are running on projects ,odel collection in db
-      console.log('projectIdsfromTeamModel:   ', projectIdsfromTeamModel);
 
       // Combine all project IDs and saving unique Ids and converting from object_id to string
       const allProjectIdsSet = new Set(
         [...projectIds, ...projectIdsfromTeamModel].map((id) => id.toString()),
       );
-      console.log('allProjectIds:   ', allProjectIdsSet);
 
       // Convert Set back to array
-      // const allProjectIds = Array.from(allProjectIdsSet);
-      // Alternatively:
       const allProjectIds = [...allProjectIdsSet];
-
-      console.log('allProjectIds:   ', allProjectIds);
 
       const createdEarnings = await (
         await this.earningsModel.create({
@@ -234,10 +180,7 @@ export class EarningsService {
         })
       ).save();
 
-      console.log('createdEarnings:  ', createdEarnings);
-
       // Save the calculated values to the database
-      // return createdEarnings.save();
       return {
         message: `New Earnings created successfully for member ID ${member} in month ${month}`,
         data: createdEarnings,
@@ -320,18 +263,11 @@ export class EarningsService {
           `Member with ID ${existingEarnings.member} not found or is deleted`,
         );
       }
-      console.log('currentSalary:    ', currentSalary);
 
       // get contractedHours from env file
       const contractedHours = parseInt(
         this.configService.get('CONTRACTED_HOURS'),
         10,
-      );
-      console.log(
-        'contractedHours:   ',
-        typeof contractedHours,
-        '    ',
-        contractedHours,
       );
 
       let totalWorkedHours: number;
@@ -351,73 +287,19 @@ export class EarningsService {
       else {
         totalWorkedHours = contractedHours;
       }
-      console.log('totalWorkedHours:   ', totalWorkedHours);
 
       const perHourRate = Math.round(currentSalary / contractedHours);
-      console.log('perHourRate:   ', typeof perHourRate);
 
       const totalEarnings = Math.round(perHourRate * totalWorkedHours);
-      console.log(
-        'totalEarnings:   ',
-        typeof totalEarnings,
-        '   ',
-        totalEarnings,
-      );
 
       const netSalary = Math.round(
         totalEarnings - updateEarningDto.totalDeductions,
       );
-      console.log('netSalary:   ', typeof netSalary);
 
       // Validation: Invalid values for calculated fields
       if (totalWorkedHours < 0 || totalEarnings < 0 || netSalary < 0) {
         throw new BadRequestException('Invalid values for calculated fields');
       }
-
-      // const currentMonth = moment().format('MMMM');
-      // const currentYear = parseInt(moment().format('YYYY'), 10); // Convert year to a number
-      
-      // const { member } = updateEarningDto;
-      // const newMemberId = member;
-      // const month = currentMonth;
-      // const year = currentYear;
-
-      // // Check if the memberId is being updated
-      // if (newMemberId && existingEarnings.member.toString() !== newMemberId) {
-      //   throw new BadRequestException(
-      //     'MemberId cannot be changed. It should remain the same.',
-      //   );
-      // }
-
-      // // Check if the month or year is being updat (if provided)
-      // if (month && existingEarnings.month !== month) {
-      //   throw new BadRequestException(
-      //     'Month cannot be changed. It should remain the same.',
-      //   );
-      // }
-
-      // if (year && existingEarnings.year !== year) {
-      //   throw new BadRequestException(
-      //     'Year cannot be changed. It should remain the same.',
-      //   );
-      // }
-
-      // // Validate that the referenced Member exists
-      // const memberExist = await this.memberModel
-      //   .findById({ _id: member })
-      //   .exec();
-      // if (!memberExist) {
-      //   throw new NotFoundException(`Member with ID ${member} not found`);
-      // }
-
-      // // Automatically fetch the department associated with the member
-      // const department = memberExist.department;
-      // // Validate that the associated Department exists
-      // if (!department) {
-      //   throw new NotFoundException(
-      //     `Department not found for the provided member`,
-      //   );
-      // }
 
       // Update the Earnings instance with the validated data
       const updatedEarning = Object.assign(existingEarnings, {
@@ -453,10 +335,6 @@ export class EarningsService {
           console.log(
             `PayRoll not found for member ID ${saveData.member} in month ${saveData.month} and year ${saveData.year}`,
           );
-          // You can choose to throw an exception or perform other actions
-          // throw new NotFoundException(
-          //   `PayRoll not found for member ID ${saveData.member} in month ${saveData.month} and year ${saveData.year}`,
-          // );
         }
       }
 

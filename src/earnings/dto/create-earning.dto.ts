@@ -28,10 +28,4 @@ export class CreateEarningDto {
   @IsNumber()
   totalDeductions: number;
 
-  // @IsNotEmpty()
-  // @IsString()
-  // department: string;
-
-  // @IsArray()
-  // projectsAssigned: string[];
 }
