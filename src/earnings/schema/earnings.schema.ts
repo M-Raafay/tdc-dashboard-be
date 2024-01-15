@@ -27,6 +27,7 @@ export class Earnings extends Document {
 
   @Prop({ required: true })
   currentSalary: number; // will get from the member table
+  
 
  
 
@@ -43,8 +44,12 @@ export class Earnings extends Document {
   // projectsWorkedOn: string[]; // Array of Project IDs assigned to the member, , will get from projects model against a member id
   // Additional fields
 
+
   @Prop({ required: true })
   contractedHours: number; // will get from env file
+
+  @Prop({ required: true })
+  perHourRate: number; // will get from env file
 
   @Prop({ required: true, default: 0 })
   totalOvertimeHours: number; //after we will get data from clockify api and will calculate

@@ -66,6 +66,8 @@ export class EarningsService {
       const month = currentMonth;
       const currentYear = parseInt(moment().format('YYYY'), 10); // Convert year to a number
       const year = currentYear;
+      console.log('month: ',month);
+      console.log('year: ',year);
 
       // Fetch the salary from the member model
       const memberExistSalary = await this.memberModel
@@ -202,6 +204,7 @@ export class EarningsService {
           year,
           contractedHours,
           currentSalary,
+          perHourRate,
           totalWorkedHours,
           totalEarnings,
           netSalary,
