@@ -374,54 +374,55 @@ export class EarningsService {
         throw new BadRequestException('Invalid values for calculated fields');
       }
 
-      const { member } = updateEarningDto;
-      const newMemberId = member;
-      const currentMonth = moment().format('MMMM');
-      const month = currentMonth;
-      const currentYear = parseInt(moment().format('YYYY'), 10); // Convert year to a number
-      const year = currentYear;
+      // const currentMonth = moment().format('MMMM');
+      // const currentYear = parseInt(moment().format('YYYY'), 10); // Convert year to a number
+      
+      // const { member } = updateEarningDto;
+      // const newMemberId = member;
+      // const month = currentMonth;
+      // const year = currentYear;
 
-      // Check if the memberId is being updated
-      if (newMemberId && existingEarnings.member.toString() !== newMemberId) {
-        throw new BadRequestException(
-          'MemberId cannot be changed. It should remain the same.',
-        );
-      }
+      // // Check if the memberId is being updated
+      // if (newMemberId && existingEarnings.member.toString() !== newMemberId) {
+      //   throw new BadRequestException(
+      //     'MemberId cannot be changed. It should remain the same.',
+      //   );
+      // }
 
-      // Check if the month or year is being updat (if provided)
-      if (month && existingEarnings.month !== month) {
-        throw new BadRequestException(
-          'Month cannot be changed. It should remain the same.',
-        );
-      }
+      // // Check if the month or year is being updat (if provided)
+      // if (month && existingEarnings.month !== month) {
+      //   throw new BadRequestException(
+      //     'Month cannot be changed. It should remain the same.',
+      //   );
+      // }
 
-      if (year && existingEarnings.year !== year) {
-        throw new BadRequestException(
-          'Year cannot be changed. It should remain the same.',
-        );
-      }
+      // if (year && existingEarnings.year !== year) {
+      //   throw new BadRequestException(
+      //     'Year cannot be changed. It should remain the same.',
+      //   );
+      // }
 
-      // Validate that the referenced Member exists
-      const memberExist = await this.memberModel
-        .findById({ _id: member })
-        .exec();
-      if (!memberExist) {
-        throw new NotFoundException(`Member with ID ${member} not found`);
-      }
+      // // Validate that the referenced Member exists
+      // const memberExist = await this.memberModel
+      //   .findById({ _id: member })
+      //   .exec();
+      // if (!memberExist) {
+      //   throw new NotFoundException(`Member with ID ${member} not found`);
+      // }
 
-      // Automatically fetch the department associated with the member
-      const department = memberExist.department;
-      // Validate that the associated Department exists
-      if (!department) {
-        throw new NotFoundException(
-          `Department not found for the provided member`,
-        );
-      }
+      // // Automatically fetch the department associated with the member
+      // const department = memberExist.department;
+      // // Validate that the associated Department exists
+      // if (!department) {
+      //   throw new NotFoundException(
+      //     `Department not found for the provided member`,
+      //   );
+      // }
 
       // Update the Earnings instance with the validated data
       const updatedEarning = Object.assign(existingEarnings, {
         ...updateEarningDto,
-        department,
+        // department,
         totalWorkedHours,
         totalEarnings,
         netSalary,

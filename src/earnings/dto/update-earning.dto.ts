@@ -9,7 +9,8 @@ import {
   IsString,
 } from 'class-validator';
 
-export class UpdateEarningDto extends PartialType(CreateEarningDto) {
+// export class UpdateEarningDto extends PartialType(CreateEarningDto) {
+export class UpdateEarningDto {
   @IsOptional()
   @IsNumber()
   totalOvertimeHours?: number;
